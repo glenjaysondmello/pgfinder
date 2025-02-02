@@ -1,0 +1,339 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-image: linear-gradient(to right, #27272a, #1e3a8a);
+  animation: gradient 10s ease infinite;
+  background-size: 200% 200%;
+  overscroll-behavior: none;
+}
+
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.absolute {
+  position: absolute;
+}
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+@layer base {
+  html {
+    font-family: "Poppins", sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Space Grotesk", sans-serif;
+    @apply font-semibold tracking-tight text-gray-800;
+  }
+
+  /* Simplified heading sizes */
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  /* Clean focus styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-gray-300 ring-offset-2;
+  }
+
+  /* Simplified scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+
+  /* Simple selection color */
+  ::selection {
+    @apply bg-gray-200 text-gray-800;
+  }
+}
+
+/* Simplified utilities */
+@layer utilities {
+  .bg-glass {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes borderAnimation {
+  0% {
+    background-position: 0% 50%;
+    box-shadow: 0 0 15px rgba(88, 28, 135, 0.5),
+      0 0 30px rgba(124, 58, 237, 0.3), 0 0 45px rgba(167, 139, 250, 0.2);
+  }
+  50% {
+    background-position: 100% 50%;
+    box-shadow: 0 0 20px rgba(88, 28, 135, 0.6),
+      0 0 40px rgba(124, 58, 237, 0.4), 0 0 60px rgba(167, 139, 250, 0.3);
+  }
+  100% {
+    background-position: 0% 50%;
+    box-shadow: 0 0 15px rgba(88, 28, 135, 0.5),
+      0 0 30px rgba(124, 58, 237, 0.3), 0 0 45px rgba(167, 139, 250, 0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.dark-animated-container {
+  @apply bg-slate-950/50 backdrop-blur-lg p-8 w-full max-w-md relative;
+  background-clip: padding-box;
+  border-radius: 0.75rem;
+  border: solid 2px transparent;
+
+  /* Dark mode shadow */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5),
+    inset 0 2px 15px rgba(88, 28, 135, 0.15),
+    inset 0 -1px 15px rgba(0, 0, 0, 0.5);
+
+  /* Shimmer effect */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0.75rem;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(167, 139, 250, 0.03),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 4s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Neon border effect */
+  &::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+      240deg,
+      #2e1065,
+      /* Darker purple */ #4c1d95,
+      /* Deep purple */ #5b21b6,
+      /* Vivid purple */ #2e1065 /* Back to darker purple */
+    );
+    background-size: 400% 400%;
+    animation: borderAnimation 8s ease infinite;
+    border-radius: 0.75rem;
+    z-index: -1;
+    filter: blur(1px);
+  }
+
+  /* Enhanced hover effects */
+  &:hover::after {
+    animation-duration: 4s;
+    filter: blur(1.5px);
+  }
+
+  &:hover {
+    box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 28, 135, 0.4),
+      inset 0 2px 15px rgba(88, 28, 135, 0.2),
+      inset 0 -1px 15px rgba(0, 0, 0, 0.6);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
+  }
+
+  /* Inner glow for depth */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      rgba(167, 139, 250, 0.05),
+      transparent 50%
+    );
+    border-radius: 0.75rem;
+    pointer-events: none;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-slideFromLeft {
+  animation: slideFromLeft 0.8s ease-out;
+}
+
+.animate-slideFromRight {
+  animation: slideFromRight 0.8s ease-out;
+}
+
+.animate-slideFromTop {
+  animation: slideFromTop 0.8s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.3s forwards;
+}
+
+.animate-slideOutLeft {
+  animation: slideOutLeft 0.3s forwards;
+}
