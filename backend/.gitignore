@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 *.env
 *.txt
-node/serviceAccount.json
+serviceAccount.json
