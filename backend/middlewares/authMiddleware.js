@@ -5,7 +5,7 @@ dotenv.config()
 
 admin.initializeApp({
   credential: admin.credential.cert(
-    require(process.env.FIREBASE_ADMIN_SDK_PATH)
+    require("../serviceAccount.json")
   ),
 });
 

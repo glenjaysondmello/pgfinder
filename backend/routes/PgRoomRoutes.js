@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.post("/addRoom", verifyToken, verifyAdmin, addRoom);
 
-router.patch("/updateRoom", verifyToken, verifyAdmin, updateRoom);
+router.patch("/updateRoom/:id", verifyToken, verifyAdmin, updateRoom);
 
-router.delete("/deleteRoom", verifyToken, verifyAdmin, deleteRoom);
+router.delete("/deleteRoom/:id", verifyToken, verifyAdmin, deleteRoom);
 
 router.get("/searchRooms", verifyToken, searchRooms);
 

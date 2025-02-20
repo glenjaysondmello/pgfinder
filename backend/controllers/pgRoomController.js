@@ -25,6 +25,12 @@ const updateRoom = async (req, res) => {
 
 const deleteRoom = async (req, res) => {
   try {
+    const room = await PgRoom.findById(req.params.id);
+
+    if(!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+
     await PgRoom.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted room successfully" });
   } catch (error) {
@@ -34,23 +40,28 @@ const deleteRoom = async (req, res) => {
 
 const searchRooms = async (req, res) => {
   try {
-    const { query } = res.query;
+    const { query } = req.query; // Fix here
 
-    if (!query) res.status(400).json({ message: "Search query is Required" });
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
     const keywords = query.split(" ").map((word) => new RegExp(word, "i"));
 
     const searchResults = await PgRoom.find({
-      $and: [
-        {
-          $or: [{ name: { $in: keywords } }, { location: { $in: keywords } }],
-        },
-        { amenities: { $in: keywords } },
+      $or: [
+        { name: { $in: keywords } },
+        { location: { $in: keywords } },
+        { amenities: { $in: keywords } }
       ],
     });
+
     res.json(searchResults);
   } catch (error) {
-    res.status(500).json({ error: "SErver error while searching" });
+    console.error("Search error:", error);
+    res.status(500).json({ error: "Server error while searching" });
   }
 };
+
 
 module.exports = { addRoom, updateRoom, deleteRoom, searchRooms };
