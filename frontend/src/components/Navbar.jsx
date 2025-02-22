@@ -31,8 +31,6 @@ const Navbar = () => {
   useEffect(() => {
     const unSubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
-        console.log(user.photoURL);
 
         dispatch(
           setAuthUser({

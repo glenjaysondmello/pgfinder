@@ -6,6 +6,7 @@ import Signup from "./pages/Signup";
 import { Toaster } from "react-hot-toast";
 import Search from "./pages/Search";
 import Chatbot from "./pages/Chatbot";
+import AdminDashboard from "./adminpage/AdminDashboard";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/search" element={<Search />} />
           <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>
       <Toaster position="top-center" reverseOrder={false} />

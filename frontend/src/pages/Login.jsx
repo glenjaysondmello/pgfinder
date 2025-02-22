@@ -27,7 +27,7 @@ const Login = () => {
       console.log(userCredentials);
       const loggedUser = userCredentials.user;
       const token = await loggedUser.getIdToken();
-      console.log(token);
+      console.log("Token:",token);
 
       dispatch(
         setAuthUser({

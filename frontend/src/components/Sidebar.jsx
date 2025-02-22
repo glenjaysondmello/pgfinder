@@ -22,7 +22,7 @@ const Sidebar = () => {
     },
     {
       icon: <PiShoppingCartSimpleFill size="24px" color="white" />,
-      text: "Your Cart",
+      text: "Your List",
       browse: () => navigate("/cart"),
     },
     {
@@ -32,8 +32,8 @@ const Sidebar = () => {
     },
     {
       icon: <CgProfile size="24px" color="white" />,
-      text: "Your Profile",
-      browse: () => navigate("/profile"),
+      text: "Admin",
+      browse: () => navigate("/admin"),
     },
   ];
 

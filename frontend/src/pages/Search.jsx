@@ -1,8 +1,8 @@
 import React from "react";
-import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { IoIosSearch } from "react-icons/io";
-import Sidebar from "../components/Sidebar";
+import Banner from "../components/Banner";
+import SidebarAction from "../actionfunctions/SidebarAction";
 
 const Search = () => {
   const dispatch = useDispatch();
@@ -15,10 +15,8 @@ const Search = () => {
 
   return (
     <div>
-      <Navbar />
-      <div className="fixed top-0 left-0 w-full z-50 transition-transform duration-300">
-        {open && <Sidebar />}
-      </div>
+      <Banner />
+      <SidebarAction />
       <div className="w-[75%] ml-48 mt-20">
         <div className="relative flex items-center">
           <div className="relative w-full flex items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">

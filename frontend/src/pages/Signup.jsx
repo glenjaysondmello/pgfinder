@@ -33,7 +33,7 @@ const Signup = () => {
       console.log(userCredentials);
       const registeredUser = userCredentials.user;
       const token = await registeredUser.getIdToken();
-      console.log(token);
+      console.log("Token:",token);
       updateProfile(registeredUser, {
         displayName: name,
       }).then(() => {
