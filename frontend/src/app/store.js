@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import scrollReducer from "../features/scroll/scrollSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
-import searchReducer from "../features/search/searchSlice";
 import {
   persistReducer,
   FLUSH,
@@ -18,7 +17,6 @@ const rootReducer = combineReducers({
   auth: authReducer,
   scroll: scrollReducer,
   sidebar: sidebarReducer,
-  search: searchReducer,
 });
 
 const persistConfig = {
