@@ -1,17 +1,41 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import Banner from "../components/Banner";
 import SidebarAction from "../actionfunctions/SidebarAction";
 
 const Search = () => {
-  const dispatch = useDispatch();
-  const { query, results, loading, error } = useSelector(
-    (store) => store.search
-  );
-  const { open } = useSelector((store) => store.sidebar);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSearchChange = () => {};
+  const handleSearchChange = async (e) => {
+    const searchValue = e.target.value;
+    setQuery(searchValue);
+
+    if (!searchValue.trim()) {
+      setResults([]);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(
+        `http://localhost:5000/api/pg/searchPgs?query=${searchValue}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setResults(data);
+    } catch (error) {
+      setError("Error fetching search results");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -24,15 +48,35 @@ const Search = () => {
             <input
               type="text"
               className="w-full py-3 pl-12 pr-4 text-gray-700 bg-transparent rounded-lg outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Search. . ."
-              // value={query}
-              // onChange={handleSearchChange}
+              placeholder="Search PG by name, location, or amenities..."
+              value={query}
+              onChange={handleSearchChange}
             />
           </div>
         </div>
       </div>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+
+      {loading && <p className="mt-4 text-gray-600">Loading...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
+
+      <div className="mt-6 w-[75%] ml-48">
+        {results.length > 0 ? (
+          <ul className="space-y-4">
+            {results.map((pg) => (
+              <li key={pg._id} className="p-4 bg-white shadow-md rounded-lg">
+                <h3 className="text-lg font-semibold">{pg.name}</h3>
+                <p className="text-gray-600">📍 {pg.location}</p>
+                <p className="text-gray-500">💰 Price: ₹{pg.price}</p>
+                <p className="text-gray-500">
+                  🛠️ Amenities: {pg.amenities.join(", ")}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          !loading && <p className="mt-4 text-gray-500">No results found.</p>
+        )}
+      </div>
     </div>
   );
 };

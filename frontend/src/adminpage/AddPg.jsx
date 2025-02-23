@@ -31,7 +31,12 @@ const AddPg = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/pg/addRoom", formatData);
+      const token = localStorage.getItem("token");
+      await axios.post("http://localhost:5000/api/pg/addPg", formatData, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("PG added successfully");
       setPgData({
         name: "",

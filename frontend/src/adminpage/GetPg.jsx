@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { head } from "../../../backend/routes/PgRoomRoutes";
 
 const GetPg = () => {
   const [pgRooms, setPgRooms] = useState([]);
@@ -12,7 +13,10 @@ const GetPg = () => {
   const fetchPgs = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/pg/getAllPgs"
+        "http://localhost:5000/api/pg/getAllPgs",
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       setPgRooms(data);
     } catch (error) {
@@ -24,7 +28,9 @@ const GetPg = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this PG?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/pg/deletePg/${id}`);
+      await axios.delete(`http://localhost:5000/api/pg/deletePg/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       toast.success("PG deleted successfully");
       fetchPgs();
     } catch (error) {
@@ -36,7 +42,10 @@ const GetPg = () => {
   const handleEdit = async (id) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/pg/getPg/${id}`
+        `http://localhost:5000/api/pg/getPg/${id}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       setEditData(data);
     } catch (error) {
@@ -49,7 +58,10 @@ const GetPg = () => {
     try {
       await axios.patch(
         `http://localhost:5000/api/pg/updatePg/${editData._id}`,
-        editData
+        editData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       toast.success("PG details updated successfully");
       setEditData(null);

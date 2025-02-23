@@ -7,6 +7,8 @@ import { Toaster } from "react-hot-toast";
 import Search from "./pages/Search";
 import Chatbot from "./pages/Chatbot";
 import AdminDashboard from "./adminpage/AdminDashboard";
+import AddPg from "./adminpage/AddPg";
+import GetPg from "./adminpage/GetPg";
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/add-pg" element={<AddPg />} />
+          <Route path="/get-pgs" element={<GetPg />} />
         </Routes>
       </Router>
       <Toaster position="top-center" reverseOrder={false} />
