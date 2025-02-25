@@ -12,21 +12,20 @@ import GetPg from "./adminpage/GetPg";
 
 const App = () => {
   return (
-    <div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/add-pg" element={<AddPg />} />
-          <Route path="/get-pgs" element={<GetPg />} />
-        </Routes>
-      </Router>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route path="addpg" element={<AddPg />} />
+          <Route path="getpg" element={<GetPg />} />
+        </Route>
+      </Routes>
       <Toaster position="top-center" reverseOrder={false} />
-    </div>
+    </Router>
   );
 };
 

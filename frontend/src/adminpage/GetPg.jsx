@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { head } from "../../../backend/routes/PgRoomRoutes";
+import axios from "axios";
 
 const GetPg = () => {
   const [pgRooms, setPgRooms] = useState([]);
   const [editData, setEditData] = useState(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchPgs();
@@ -13,9 +14,14 @@ const GetPg = () => {
   const fetchPgs = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/pg/getAllPgs",
+        "http://localhost:5000/api/pg/getAllPg",
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
       );
       setPgRooms(data);
@@ -29,7 +35,12 @@ const GetPg = () => {
     if (!window.confirm("Are you sure you want to delete this PG?")) return;
     try {
       await axios.delete(`http://localhost:5000/api/pg/deletePg/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
       });
       toast.success("PG deleted successfully");
       fetchPgs();
@@ -44,10 +55,17 @@ const GetPg = () => {
       const { data } = await axios.get(
         `http://localhost:5000/api/pg/getPg/${id}`,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
       );
       setEditData(data);
+      console.log(data);
+      
     } catch (error) {
       console.error("Error fetching PG details:", error);
       toast.error("Failed to load PG details");
@@ -60,7 +78,12 @@ const GetPg = () => {
         `http://localhost:5000/api/pg/updatePg/${editData._id}`,
         editData,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
       );
       toast.success("PG details updated successfully");
@@ -73,7 +96,7 @@ const GetPg = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">Admin PG Management</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {pgRooms.map((pg) => (

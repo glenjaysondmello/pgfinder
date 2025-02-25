@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import Banner from "../components/Banner";
 import SidebarAction from "../actionfunctions/SidebarAction";
+import axios from "axios";
 
 const Search = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("token");
 
   const handleSearchChange = async (e) => {
     const searchValue = e.target.value;
@@ -22,10 +25,11 @@ const Search = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
+      
       const { data } = await axios.get(
         `http://localhost:5000/api/pg/searchPgs?query=${searchValue}`,
         {
+          Authorization: `Bearer ${token}`,
           headers: { Authorization: `Bearer ${token}` },
         }
       );

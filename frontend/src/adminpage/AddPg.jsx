@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -32,11 +32,14 @@ const AddPg = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/pg/addPg", formatData, 
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.post("http://localhost:5000/api/pg/addPg", formatData, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       toast.success("PG added successfully");
       setPgData({
         name: "",
@@ -54,7 +57,7 @@ const AddPg = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen flex items-center justify-center">
+    <div className="p-6 min-h-screen flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4">Add New PG</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

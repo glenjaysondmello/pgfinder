@@ -34,6 +34,8 @@ const Signup = () => {
       const registeredUser = userCredentials.user;
       const token = await registeredUser.getIdToken();
       console.log("Token:",token);
+      localStorage.setItem("token", token);
+      
       updateProfile(registeredUser, {
         displayName: name,
       }).then(() => {

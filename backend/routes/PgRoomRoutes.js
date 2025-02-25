@@ -1,20 +1,26 @@
 const express = require("express");
 const {
-  addRoom,
-  updateRoom,
-  deleteRoom,
-  searchRooms,
+  getAllPgs,
+  getPg,
+  addPg,
+  updatePg,
+  deletePg,
+  searchPgs,
 } = require("../controllers/pgRoomController");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.post("/addRoom", verifyToken, verifyAdmin, addRoom);
+router.get("/getAllPg", verifyToken, verifyAdmin, getAllPgs);
 
-router.patch("/updateRoom/:id", verifyToken, verifyAdmin, updateRoom);
+router.get("/getPg/:id", verifyToken,  getPg);
 
-router.delete("/deleteRoom/:id", verifyToken, verifyAdmin, deleteRoom);
+router.post("/addPg", verifyToken, addPg);
 
-router.get("/searchRooms", verifyToken, searchRooms);
+router.patch("/updatePg/:id", verifyToken, updatePg);
+
+router.delete("/deletePg/:id", verifyToken, deletePg);
+
+router.get("/searchPgs", verifyToken, searchPgs);
 
 module.exports = router;

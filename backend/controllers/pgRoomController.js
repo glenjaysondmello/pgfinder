@@ -1,6 +1,29 @@
 const PgRoom = require("../models/PgRoom");
 
-const addRoom = async (req, res) => {
+const getAllPgs = async (req, res) => {
+  try {
+    const rooms = await PgRoom.find();
+    res.json(rooms);
+  } catch (error) {
+    res.status(500).json({ error: "Server error while fetching rooms" });
+  }
+};
+
+const getPg = async (req, res) => {
+  try {
+    const room = await PgRoom.findById(req.params.id);
+
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+
+    res.json(room);
+  } catch (error) {
+    res.status(500).json({ error: "Server error while fetching the room" });
+  }
+};
+
+const addPg = async (req, res) => {
   try {
     const newRoom = new PgRoom(req.body);
     await newRoom.save();
@@ -10,7 +33,7 @@ const addRoom = async (req, res) => {
   }
 };
 
-const updateRoom = async (req, res) => {
+const updatePg = async (req, res) => {
   try {
     const updatedRoom = await PgRoom.findByIdAndUpdate(
       req.params.id,
@@ -23,11 +46,11 @@ const updateRoom = async (req, res) => {
   }
 };
 
-const deleteRoom = async (req, res) => {
+const deletePg = async (req, res) => {
   try {
     const room = await PgRoom.findById(req.params.id);
 
-    if(!room) {
+    if (!room) {
       return res.status(404).json({ error: "Room not found" });
     }
 
@@ -38,7 +61,7 @@ const deleteRoom = async (req, res) => {
   }
 };
 
-const searchRooms = async (req, res) => {
+const searchPgs = async (req, res) => {
   try {
     const { query } = req.query; // Fix here
 
@@ -52,7 +75,7 @@ const searchRooms = async (req, res) => {
       $or: [
         { name: { $in: keywords } },
         { location: { $in: keywords } },
-        { amenities: { $in: keywords } }
+        { amenities: { $in: keywords } },
       ],
     });
 
@@ -63,5 +86,4 @@ const searchRooms = async (req, res) => {
   }
 };
 
-
-module.exports = { addRoom, updateRoom, deleteRoom, searchRooms };
+module.exports = { getAllPgs, getPg, addPg, updatePg, deletePg, searchPgs };
