@@ -19,10 +19,9 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/search" element={<Search />} />
         <Route path="/chatbot" element={<Chatbot />} />
-        <Route path="/admin" element={<AdminDashboard />}>
-          <Route path="addpg" element={<AddPg />} />
-          <Route path="getpg" element={<GetPg />} />
-        </Route>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/addpg" element={<AddPg />} />
+        <Route path="/admin/getpg" element={<GetPg />} />
       </Routes>
       <Toaster position="top-center" reverseOrder={false} />
     </Router>

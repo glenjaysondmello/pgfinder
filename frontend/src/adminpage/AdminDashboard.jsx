@@ -11,12 +11,12 @@ const AdminDashboard = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center justify-center h-full">
           <div className="flex gap-10 mb-60">
-            <Link to="addpg" className="flex">
+            <Link to="/admin/addpg" className="flex">
               <div className="bg-white/10 text-white p-6 rounded-lg shadow-lg transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none font-mono ring-2 ring-slate-500 hover:ring-blue-500">
                 ADD PG
               </div>
             </Link>
-            <Link to="getpg" className="flex">
+            <Link to="/admin/getpg" className="flex">
               <div className="bg-white/10 text-white p-6 rounded-lg shadow-lg transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none font-mono ring-2 ring-slate-500 hover:ring-blue-500">
                 ALL PG's
               </div>
