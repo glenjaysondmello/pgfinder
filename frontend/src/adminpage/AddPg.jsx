@@ -56,18 +56,23 @@ const AddPg = () => {
     }
   };
 
+  const inp_box_style =
+    "w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition duration-200";
+
   return (
-    <div className="p-6 min-h-screen flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">Add New PG</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 to-purple-900 flex items-center justify-center p-4">
+      <div className="dark-animated-container">
+        <h2 className="text-3xl font-bold text-white text-center mb-8">
+          Add New PG
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <input
             type="text"
             name="name"
             placeholder="PG Name"
             value={pgData.name}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
           <input
@@ -76,7 +81,7 @@ const AddPg = () => {
             placeholder="Location"
             value={pgData.location}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
           <input
@@ -85,7 +90,7 @@ const AddPg = () => {
             placeholder="Contact Number"
             value={pgData.contactNumber}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
           <input
@@ -94,7 +99,7 @@ const AddPg = () => {
             placeholder="Email"
             value={pgData.email}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
           <input
@@ -103,31 +108,31 @@ const AddPg = () => {
             placeholder="Amenities (comma separated)"
             value={pgData.amenities}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
           <input
             type="number"
             name="price"
-            placeholder="Price (₹)"
+            placeholder="Price"
             value={pgData.price}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={inp_box_style}
             required
           />
-          <label className="flex items-center">
+          <div className="flex items-center gap-2">
             <input
               type="checkbox"
               name="availability"
               checked={pgData.availability}
               onChange={handleChange}
-              className="mr-2"
+              className="w-5 h-5"
             />
-            Available
-          </label>
+            <label className="text-white text-sm">Available</label>
+          </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30 transform hover:scale-[1.02] transition-all duration-200"
           >
             Add PG
           </button>
