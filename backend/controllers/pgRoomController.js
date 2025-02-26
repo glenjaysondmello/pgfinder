@@ -28,7 +28,6 @@ const addPg = async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map((file) => file.path) : [];
 
-
     const newRoom = new PgRoom({ ...req.body, images: imageUrls });
     await newRoom.save();
     res.status(201).json({ message: "PG Room Added Successfully" });
@@ -44,13 +43,18 @@ const updatePg = async (req, res) => {
     if (!room) return res.status(404).json({ error: "Room not found" });
 
     let updatedImages = room.images;
-    const { imagesToDelete } = req.body;
+    const imagesToDelete = req.body.imagesToDelete
+      ? Array.isArray(req.body.imagesToDelete)
+        ? req.body.imagesToDelete
+        : [req.body.imagesToDelete]
+      : [];
     const newImages = req.files ? req.files.map((file) => file.path) : [];
 
     if (imagesToDelete && imagesToDelete.length > 0) {
       await Promise.all(
         imagesToDelete.map(async (imageUrl) => {
-          const publicId = imageUrl.split("/").pop().split(".")[0];
+          // const publicId = imageUrl.split("/").pop().split(".")[0];
+          const publicId = imageUrl.split("/upload/")[1].split(".")[0];
           await cloudinary.uploader.destroy(`pg_images/${publicId}`);
           updatedImages = updatedImages.filter((img) => img !== imageUrl);
         })

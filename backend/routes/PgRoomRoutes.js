@@ -18,7 +18,7 @@ router.get("/getPg/:id", getPg);
 
 router.post("/addPg",upload.array("images", 5), addPg);
 
-router.patch("/updatePg/:id", upload.array("images", 5), updatePg);
+router.patch("/updatePg/:id", upload.array("newImages", 5), updatePg);
 
 router.delete("/deletePg/:id", deletePg);
 
