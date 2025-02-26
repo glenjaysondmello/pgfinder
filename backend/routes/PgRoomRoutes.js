@@ -8,6 +8,7 @@ const {
   searchPgs,
 } = require("../controllers/pgRoomController");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
+const upload = require("../cloudinary/cloudinaryConfig");
 
 const router = express.Router();
 
@@ -15,9 +16,9 @@ router.get("/getAllPg", verifyToken, verifyAdmin, getAllPgs);
 
 router.get("/getPg/:id", verifyToken,  getPg);
 
-router.post("/addPg", verifyToken, addPg);
+router.post("/addPg", verifyToken, addPg, upload.array("images", 5));
 
-router.patch("/updatePg/:id", verifyToken, updatePg);
+router.patch("/updatePg/:id", verifyToken, updatePg, upload.array("images", 5));
 
 router.delete("/deletePg/:id", verifyToken, deletePg);
 

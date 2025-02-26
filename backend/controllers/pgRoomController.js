@@ -25,7 +25,9 @@ const getPg = async (req, res) => {
 
 const addPg = async (req, res) => {
   try {
-    const newRoom = new PgRoom(req.body);
+    const imageUrls = req.files.map((file) => file.path);
+
+    const newRoom = new PgRoom({ ...req.body, images: imageUrls });
     await newRoom.save();
     res.status(201).json({ message: "PG Room Added Successfully" });
   } catch (error) {
@@ -35,9 +37,11 @@ const addPg = async (req, res) => {
 
 const updatePg = async (req, res) => {
   try {
+    const imageUrls = req.files.map((file) => file.path);
+
     const updatedRoom = await PgRoom.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, ...(imageUrls && { images: imageUrls }) },
       { new: true }
     );
     res.json(updatedRoom);
