@@ -26,7 +26,8 @@ const getPg = async (req, res) => {
 
 const addPg = async (req, res) => {
   try {
-    const imageUrls = req.files.map((file) => file.path);
+    const imageUrls = req.files ? req.files.map((file) => file.path) : [];
+
 
     const newRoom = new PgRoom({ ...req.body, images: imageUrls });
     await newRoom.save();
@@ -82,7 +83,7 @@ const deletePg = async (req, res) => {
     }
 
     for (const imageUrl of room.images) {
-      const publicId = imageUrl.split("/").pop().split(".")[0];
+      const publicId = imageUrl.split("/upload/")[1].split(".")[0];
       await cloudinary.uploader.destroy(publicId);
     }
 
