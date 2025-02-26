@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get("/getAllPg", verifyToken, verifyAdmin, getAllPgs);
 
-router.get("/getPg/:id", verifyToken,  getPg);
+router.get("/getPg/:id", verifyToken, getPg);
 
 router.post("/addPg", verifyToken, addPg, upload.array("images", 5));
 
