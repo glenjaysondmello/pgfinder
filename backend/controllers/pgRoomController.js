@@ -52,14 +52,14 @@ const updatePg = async (req, res) => {
 
     if (imagesToDelete && imagesToDelete.length > 0) {
       await Promise.all(
-        imagesToDelete.map(async (imageUrl) => {
-          // const publicId = imageUrl.split("/").pop().split(".")[0];
+        imagesToDelete.map((imageUrl) => {
           const publicId = imageUrl.split("/upload/")[1].split(".")[0];
-          await cloudinary.uploader.destroy(`pg_images/${publicId}`);
+          cloudinary.uploader.destroy(`pg_images/${publicId}`);
           updatedImages = updatedImages.filter((img) => img !== imageUrl);
         })
       );
     }
+    // const publicId = imageUrl.split("/").pop().split(".")[0];
 
     updatedImages = [...updatedImages, ...newImages];
 
@@ -86,10 +86,15 @@ const deletePg = async (req, res) => {
       return res.status(404).json({ error: "Room not found" });
     }
 
-    for (const imageUrl of room.images) {
-      const publicId = imageUrl.split("/upload/")[1].split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-    }
+    const publicIds = room.images.map((imageUrl) => {
+      return imageUrl.split("/upload/")[1].split(".")[0];
+    });
+
+    await Promise.all(
+      publicIds.map((publicId) => {
+        return cloudinary.uploader.destroy(publicId);
+      })
+    );
 
     await PgRoom.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted room successfully" });
