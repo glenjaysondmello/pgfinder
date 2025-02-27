@@ -11,7 +11,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
+const imageStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "pg_images",
@@ -20,13 +20,23 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({
-  storage,
+const videoStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "pg_videos",
+    resource_type: "video",
+    allowed_formats: ["mp4", "webm", "mov", "avi", "mkv"],
+  },
+});
+
+const uploadImage = multer({
+  storage: imageStorage,
   limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
+    console.log("image");
     console.log("File received:", file);
     console.log("file mimetype:", file.mimetype);
-    
+
     if (!file.mimetype.startsWith("image/")) {
       return cb(new Error("Only image files are allowed"), false);
     }
@@ -34,4 +44,19 @@ const upload = multer({
   },
 });
 
-module.exports = { cloudinary, upload };
+const uploadVideo = multer({
+  storage: videoStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    console.log("video");
+    console.log("File received:", file);
+    console.log("file mimetype:", file.mimetype);
+
+    if (!file.mimetype.startsWith("video/")) {
+      return cb(new Error("Only videos are allowed"), false);
+    }
+    cb(null, true);
+  },
+});
+
+module.exports = { cloudinary, uploadImage, uploadVideo };
