@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import Banner from "../components/Banner";
 import SidebarAction from "../actionfunctions/SidebarAction";
+import { Link } from "react-router-dom";
+import Loader from "../animations/Loader";
 import axios from "axios";
 
 const Search = () => {
@@ -25,7 +27,6 @@ const Search = () => {
     setError(null);
 
     try {
-      
       const { data } = await axios.get(
         `http://localhost:5000/api/pg/searchPgs?query=${searchValue}`,
         {
@@ -60,7 +61,7 @@ const Search = () => {
         </div>
       </div>
 
-      {loading && <p className="mt-4 text-gray-600">Loading...</p>}
+      {loading && <p className="flex items-center justify-center mt-60"><Loader/></p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
       <div className="mt-6 w-[75%] ml-48">
@@ -68,12 +69,14 @@ const Search = () => {
           <ul className="space-y-4">
             {results.map((pg) => (
               <li key={pg._id} className="p-4 bg-white shadow-md rounded-lg">
-                <h3 className="text-lg font-semibold">{pg.name}</h3>
-                <p className="text-gray-600">📍 {pg.location}</p>
-                <p className="text-gray-500">💰 Price: ₹{pg.price}</p>
-                <p className="text-gray-500">
-                  🛠️ Amenities: {pg.amenities.join(", ")}
-                </p>
+                <Link to={`/search/pg/${pg._id}`}>
+                  <h3 className="text-lg font-semibold">{pg.name}</h3>
+                  <p className="text-gray-600">📍 {pg.location}</p>
+                  <p className="text-gray-500">💰 Price: ₹{pg.price}</p>
+                  <p className="text-gray-500">
+                    🛠️ Amenities: {pg.amenities.join(", ")}
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>

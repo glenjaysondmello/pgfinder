@@ -9,6 +9,7 @@ import Chatbot from "./pages/Chatbot";
 import AdminDashboard from "./adminpage/AdminDashboard";
 import AddPg from "./adminpage/AddPg";
 import GetPg from "./adminpage/GetPg";
+import PgDetails from "./pages/PgDetails";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/addpg" element={<AddPg />} />
         <Route path="/admin/getpg" element={<GetPg />} />
+        <Route path="/search/pg/:id" element={<PgDetails />} />
       </Routes>
       <Toaster position="top-center" reverseOrder={false} />
     </Router>
