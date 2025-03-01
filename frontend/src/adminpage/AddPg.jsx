@@ -13,6 +13,12 @@ const AddPg = () => {
     availability: true,
   });
 
+  const [images, setImages] = useState([]);
+
+  const handleImageChange = (e) => {
+    setImages([...images, ...e.target.files]);
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setPgData({
@@ -24,19 +30,25 @@ const AddPg = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formatData = {
-      ...pgData,
-      amenities: pgData.amenities.split(",").map((a) => a.trim()),
-      price: Number(pgData.price),
-    };
+    const formData = new FormData();
+    formData.append("name", pgData.name);
+    formData.append("location", pgData.location);
+    formData.append("contactNumber", pgData.contactNumber);
+    formData.append("email", pgData.email);
+    formData.append("availability", pgData.availability);
+    formData.append("price", pgData.price);
+
+    pgData.amenities
+      .split(",")
+      .map((a) => formData.append("amenities", a.trim()));
+    images.forEach((image) => formData.append("images", image));
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/pg/addPg", formatData, {
+      await axios.post("http://localhost:5000/api/pg/addPg", formData, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
         withCredentials: true,
       });
@@ -50,6 +62,7 @@ const AddPg = () => {
         price: "",
         availability: true,
       });
+      setImages([]);
     } catch (error) {
       console.log("Error adding PG:", error);
       toast.error("Error adding PG");
@@ -130,6 +143,15 @@ const AddPg = () => {
             />
             <label className="text-white text-sm">Available</label>
           </div>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 border rounded-mb-2"
+          />
+
           <button
             type="submit"
             className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30 transform hover:scale-[1.02] transition-all duration-200"
