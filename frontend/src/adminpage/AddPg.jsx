@@ -149,7 +149,7 @@ const AddPg = () => {
             multiple
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full p-2 border rounded-mb-2"
+            className={inp_box_style}
           />
 
           <button

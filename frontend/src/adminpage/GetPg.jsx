@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import BannerAction from "../actionfunctions/BannerAction";
 
 const GetPg = () => {
   const [pgRooms, setPgRooms] = useState([]);
@@ -61,7 +62,6 @@ const GetPg = () => {
     }
   };
 
-  // Update PG details
   const handleUpdate = async () => {
     if (!editData) return;
 
@@ -74,12 +74,10 @@ const GetPg = () => {
     formData.append("contactNumber", editData.contactNumber);
     formData.append("email", editData.email);
 
-    // Add images to delete
     editData.imagesToDelete.forEach((image) =>
       formData.append("imagesToDelete", image)
     );
 
-    // Add new images
     editData.newImages.forEach((image) => formData.append("newImages", image));
 
     try {
@@ -102,8 +100,10 @@ const GetPg = () => {
 
   return (
     <div className="p-6 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">Admin PG Management</h2>
-
+      <BannerAction />
+      <h2 className="text-3xl font-bold text-white flex items-center justify-center mt-36 mb-12">
+        Admin PG Management
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {pgRooms.map((pg) => (
           <div key={pg._id} className="bg-white p-4 shadow-md rounded-lg">
@@ -227,8 +227,12 @@ const GetPg = () => {
               className="w-full p-2 border rounded mb-2"
             />
 
-            <h4 className="text-sm font-semibold">Current Images</h4>
-            <div className="grid grid-cols-3 gap-2">
+            <h4 className="text-sm font-semibold">
+              Current Images
+              <br />
+              (Select the Images If you want to Delete them){" "}
+            </h4>
+            <div className="grid grid-cols-3 gap-2 mt-4">
               {editData.images?.map((image, index) => (
                 <div key={index} className="relative">
                   <img

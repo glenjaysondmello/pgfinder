@@ -115,7 +115,7 @@ const searchPgs = async (req, res) => {
 
     const searchResults = await PgRoom.find({
       $or: [
-        { name: { $regex: query, $options: "i" } }, 
+        { name: { $regex: query, $options: "i" } },
         { location: { $regex: query, $options: "i" } },
         { amenities: { $elemMatch: { $regex: query, $options: "i" } } },
       ],
