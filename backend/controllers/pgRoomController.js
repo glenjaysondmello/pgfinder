@@ -59,7 +59,6 @@ const updatePg = async (req, res) => {
         })
       );
     }
-    // const publicId = imageUrl.split("/").pop().split(".")[0];
 
     updatedImages = [...updatedImages, ...newImages];
 
