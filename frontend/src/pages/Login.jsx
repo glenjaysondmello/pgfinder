@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { setAuthUser } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const Login = () => {
   const {
@@ -28,7 +29,15 @@ const Login = () => {
       const loggedUser = userCredentials.user;
       const token = await loggedUser.getIdToken();
       console.log("Token:",token);
+
+      const userRole = axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
+        headers: { Authorization: `Bearer ${token}`},
+      });
+      
+      const { role } = await userRole.json();
+
       localStorage.setItem("token", token);
+      localStrorage.setItem("role", role);
 
       dispatch(
         setAuthUser({
@@ -36,6 +45,7 @@ const Login = () => {
             uid: loggedUser.uid,
             email: loggedUser.email,
             displayName: loggedUser.displayName,
+            role
           },
           token,
         })

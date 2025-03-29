@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./db/connectDB");
 const pgRoomRoutes = require("./routes/PgRoomRoutes");
+const userRoleRoutes = require("./routes/userRoleRouter");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use("/api/pg", pgRoomRoutes);
+app.use("/api/userrole", userRoleRoutes);
 
 connectDB();
 
