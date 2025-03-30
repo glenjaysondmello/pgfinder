@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { auth, googleProvider } from "../firebase/firebaseConfig";
+import { auth, googleProvider} from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "../features/auth/authSlice";
@@ -30,21 +30,21 @@ const Login = () => {
       const token = await loggedUser.getIdToken();
       console.log("Token:",token);
 
-      const userRole = axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
+      const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
         headers: { Authorization: `Bearer ${token}`},
       });
       
-      const { role } = await userRole.json();
+      const { role } = await data;
 
       localStorage.setItem("token", token);
-      localStrorage.setItem("role", role);
+      localStorage.setItem("role", role);
 
       dispatch(
         setAuthUser({
           user: {
             uid: loggedUser.uid,
             email: loggedUser.email,
-            displayName: loggedUser.displayName,
+            displayName: loggedUser.displayName || "User",
             role
           },
           token,
@@ -53,7 +53,7 @@ const Login = () => {
       toast.success("Logged In Successfully");
       navigate("/");
     } catch (error) {
-      error.code === "auth/invalid-credential"
+      error.code === "auth/invalid-credentials"
         ? toast.error("Incorrect Email or Password")
         : toast.error("An error occurred. Please try again.");
       console.log(error);
@@ -69,6 +69,16 @@ const Login = () => {
       const loggedUser = userCredentials.user;
       const token = await loggedUser.getIdToken();
 
+      const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
+        headers: { Authorization: `Bearer ${token}`},
+      });
+      
+      const { role } = await data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+
       dispatch(
         setAuthUser({
           user: {
@@ -76,6 +86,7 @@ const Login = () => {
             email: loggedUser.email,
             displayName: loggedUser.displayName,
             photoURL: loggedUser.photoURL,
+            role
           },
           token,
         })

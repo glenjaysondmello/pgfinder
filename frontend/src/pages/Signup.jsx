@@ -7,9 +7,27 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithPopup,
+  sendEmailVerification,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
+
+const checkGoogleEmail = async (email) => {
+  try {
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+    if (signInMethods.includes("google.com")) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error checking Google email: ", error);
+    return false;
+  }
+};
 
 const Signup = () => {
   const {
@@ -30,12 +48,39 @@ const Signup = () => {
         password
       );
 
+      const isGoogleEmail = await checkGoogleEmail(email);
+      
+      if (isGoogleEmail) {
+        toast.error("This email is linked to Google. Please sign in with Google.");
+        return;
+      }
+
       console.log(userCredentials);
       const registeredUser = userCredentials.user;
+
+      try {
+        await sendEmailVerification(registeredUser);
+        toast.success("Verification email sent! Please check your inbox.");
+      } catch (error) {
+        toast.error("Failed to send verification email. Please try again.");
+        console.error("Verification email error:", error);
+      }
+
       const token = await registeredUser.getIdToken();
-      console.log("Token:",token);
+      console.log("Token:", token);
+
+      const { data } = await axios.get(
+        `/api/userrole/getUserRole/${registeredUser.uid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const { role } = await data;
+
       localStorage.setItem("token", token);
-      
+      localStorage.setItem("role", role);
+
       updateProfile(registeredUser, {
         displayName: name,
       }).then(() => {
@@ -45,12 +90,13 @@ const Signup = () => {
               uid: registeredUser.uid,
               email: registeredUser.email,
               displayName: name,
+              role,
             },
             token,
           })
         );
         toast.success("Registered Successfully");
-        navigate("/login");
+        navigate("/");
       });
     } catch (error) {
       error.code === "auth/email-already-in-use"
@@ -70,6 +116,18 @@ const Signup = () => {
       const registeredUser = userCredentials.user;
       const token = await registeredUser.getIdToken();
 
+      const { data } = await axios.get(
+        `/api/userrole/getUserRole/${registeredUser.uid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const { role } = await data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
       dispatch(
         setAuthUser({
           user: {
@@ -77,6 +135,7 @@ const Signup = () => {
             email: registeredUser.email,
             displayName: registeredUser.displayName,
             photoURL: registeredUser.photoURL,
+            role,
           },
           token,
         })
