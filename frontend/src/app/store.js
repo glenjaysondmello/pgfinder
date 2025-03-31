@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import scrollReducer from "../features/scroll/scrollSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
+import pgReducer from "../features/pgslice/pgSlice";
 import {
   persistReducer,
   FLUSH,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   scroll: scrollReducer,
   sidebar: sidebarReducer,
+  pg: pgReducer
 });
 
 const persistConfig = {
