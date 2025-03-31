@@ -2,14 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/pg";
-const token = localStorage.getItem("token");
+
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+});
 
 export const fetchPgs = createAsyncThunk(
   "pg/fetchPgs",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axios.get(`${API_URL}/getAllPg`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
         withCredentials: true,
       });
       return data;
@@ -28,16 +31,15 @@ export const addPg = createAsyncThunk(
         if (key === "images") {
           pgData.images.forEach((image) => formData.append("images", image));
         } else if (key === "amenities") {
-          pgData.amenities
-            .split(",")
-            .map((a) => formData.append("amenities", a.trim()));
+          pgData.amenities.split(",").forEach((a) => formData.append("amenities", a.trim()));
+
         } else {
           formData.append(key, pgData[key]);
         }
       });
 
       const response = await axios.post(`${API_URL}/addPg`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
         withCredentials: true,
       });
 
@@ -53,7 +55,7 @@ export const deletePg = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await axios.delete(`${API_URL}/deletePg/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
         withCredentials: true,
       });
       return id;
@@ -63,20 +65,20 @@ export const deletePg = createAsyncThunk(
   }
 );
 
-export const getPg = createAsyncThunk("pg/getPg", async(id, {rejectWithValue}) => {
-  try {
-    const { data } = await axios.get(
-      `${API_URL}/getPg/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+export const getPg = createAsyncThunk(
+  "pg/getPg",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API_URL}/getPg/${id}`, {
+        headers: getAuthHeaders(),
         withCredentials: true,
-      }
-    );
-    return data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data || "Error deleting PG");
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error getting PG");
+    }
   }
-})
+);
 
 export const updatePg = createAsyncThunk(
   "pg/updatePg",
@@ -92,7 +94,7 @@ export const updatePg = createAsyncThunk(
       });
 
       await axios.patch(`${API_URL}/updatePg/${pgData._id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
         withCredentials: true,
       });
 
@@ -130,12 +132,18 @@ const pgSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(deletePg.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(deletePg.fulfilled, (state, action) => {
         state.pgRooms = state.pgRooms.filter((pg) => pg._id !== action.payload);
       })
       .addCase(deletePg.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(getPg.pending, (state) => {
+        state.status = "loading";
       })
       .addCase(getPg.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -145,6 +153,9 @@ const pgSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(updatePg.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(updatePg.fulfilled, (state, action) => {
         state.pgRooms = state.pgRooms.map((pg) =>
           pg._id === action.payload._id ? action.payload : pg
@@ -153,7 +164,7 @@ const pgSlice = createSlice({
       .addCase(updatePg.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      })
+      });
   },
 });
 
