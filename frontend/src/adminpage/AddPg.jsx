@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { addPg } from "../features/pgslice/pgSlice";
 
 const AddPg = () => {
+  const dispatch = useDispatch();
+  const { status } = useSelector((store) => store.pg);
+  const loading = status === "loading";
+
   const [pgData, setPgData] = useState({
     name: "",
     location: "",
@@ -30,43 +35,24 @@ const AddPg = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", pgData.name);
-    formData.append("location", pgData.location);
-    formData.append("contactNumber", pgData.contactNumber);
-    formData.append("email", pgData.email);
-    formData.append("availability", pgData.availability);
-    formData.append("price", pgData.price);
-
-    pgData.amenities
-      .split(",")
-      .map((a) => formData.append("amenities", a.trim()));
-    images.forEach((image) => formData.append("images", image));
-
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/pg/addPg", formData, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
+    dispatch(addPg({ ...pgData, images }))
+      .then(() => {
+        toast.success("PG Added Successfully");
+      })
+      .catch(() => {
+        toast.error("Error Adding PG");
       });
-      toast.success("PG added successfully");
-      setPgData({
-        name: "",
-        location: "",
-        contactNumber: "",
-        email: "",
-        amenities: "",
-        price: "",
-        availability: true,
-      });
-      setImages([]);
-    } catch (error) {
-      console.log("Error adding PG:", error);
-      toast.error("Error adding PG");
-    }
+
+    setPgData({
+      name: "",
+      location: "",
+      contactNumber: "",
+      email: "",
+      amenities: "",
+      price: "",
+      availability: true,
+    });
+    setImages([]);
   };
 
   const inp_box_style =
@@ -155,8 +141,9 @@ const AddPg = () => {
           <button
             type="submit"
             className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30 transform hover:scale-[1.02] transition-all duration-200"
+            disabled={loading}
           >
-            Add PG
+            {loading ? "Adding..." : "Add PG"}
           </button>
         </form>
       </div>

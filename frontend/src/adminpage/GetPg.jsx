@@ -2,50 +2,28 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import BannerAction from "../actionfunctions/BannerAction";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPgs, deletePg, updatePg } from "../features/pgslice/pgSlice";
 
 const GetPg = () => {
+  const dispatch = useDispatch();
   const [pgRooms, setPgRooms] = useState([]);
   const [editData, setEditData] = useState(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetchPgs();
-  }, []);
+    dispatch(fetchPgs());
+  }, [dispatch]);
 
-  // Fetch all PGs
-  const fetchPgs = async () => {
-    try {
-      const { data } = await axios.get(
-        "http://localhost:5000/api/pg/getAllPg",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
-      setPgRooms(data);
-    } catch (error) {
-      console.error("Error fetching PGs:", error);
-      toast.error("Error fetching PGs");
-    }
-  };
-
-  // Delete PG
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this PG?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/pg/deletePg/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
-      toast.success("PG deleted successfully");
-      fetchPgs();
-    } catch (error) {
-      console.error("Error deleting PG:", error);
-      toast.error("Error deleting PG");
-    }
+    dispatch(deletePg(id)).then(() => {
+      toast.success("PG Added Successfully");
+    })
+    .catch(() => {
+      toast.error("Error Adding PG");
+    });
   };
 
-  // Fetch PG details for editing
   const handleEdit = async (id) => {
     try {
       const { data } = await axios.get(

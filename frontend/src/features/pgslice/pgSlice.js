@@ -63,6 +63,21 @@ export const deletePg = createAsyncThunk(
   }
 );
 
+export const getPg = createAsyncThunk("pg/getPg", async(id, {rejectWithValue}) => {
+  try {
+    const { data } = await axios.get(
+      `${API_URL}/getPg/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      }
+    );
+    return data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || "Error deleting PG");
+  }
+})
+
 export const updatePg = createAsyncThunk(
   "pg/updatePg",
   async (pgData, { rejectWithValue }) => {
@@ -90,7 +105,7 @@ export const updatePg = createAsyncThunk(
 
 const pgSlice = createSlice({
   name: "pg",
-  initialState: { pgRooms: [], status: "idle", error: null },
+  initialState: { pgRooms: [], selectedPg: null, status: "idle", error: null },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -105,14 +120,40 @@ const pgSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(addPg.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(addPg.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(addPg.rejected, (state) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
       .addCase(deletePg.fulfilled, (state, action) => {
         state.pgRooms = state.pgRooms.filter((pg) => pg._id !== action.payload);
+      })
+      .addCase(deletePg.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getPg.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.selectedPg = action.payload;
+      })
+      .addCase(getPg.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       })
       .addCase(updatePg.fulfilled, (state, action) => {
         state.pgRooms = state.pgRooms.map((pg) =>
           pg._id === action.payload._id ? action.payload : pg
         );
-      });
+      })
+      .addCase(updatePg.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
   },
 });
 
