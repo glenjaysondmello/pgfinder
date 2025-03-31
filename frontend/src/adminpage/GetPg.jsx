@@ -8,6 +8,7 @@ import {
   getPg,
   updatePg,
 } from "../features/pgslice/pgSlice";
+import Loader from "../animations/Loader";
 
 const GetPg = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,8 @@ const GetPg = () => {
     try {
       await dispatch(deletePg(id)).unwrap();
       toast.success("PG Deleted Successfully");
+
+      await dispatch(fetchPgs());
     } catch (error) {
       toast.error("Failed to delete PG");
     }
@@ -38,19 +41,18 @@ const GetPg = () => {
   };
 
   const handleUpdate = async () => {
-    if (!editData) return;
+    try {
+      if (!editData) return;
 
-    dispatch(updatePg(editData))
-      .then(() => {
-        toast.success("PG updated Successfully");
-      })
-      .catch(() => {
-        toast.error("Error updating PG");
-      });
+      await dispatch(updatePg(editData)).unwrap();
+      toast.success("PG updated successfully");
+      
+      dispatch(fetchPgs());
 
-    dispatch(fetchPgs());
-
-    setEditData(null);
+      setEditData(null);
+    } catch (error) {
+      toast.error("Failed to load PG details");
+    }
   };
 
   return (
@@ -60,7 +62,11 @@ const GetPg = () => {
         Admin PG Management
       </h2>
 
-      {status === "loading" && <p>Loading...</p>}
+      {status === "loading" && (
+        <p className="flex items-center justify-center mt-60">
+          <Loader />
+        </p>
+      )}
       {status === "failed" && <p className="text-red-500">Error</p>}
 
       {status === "succeeded" && (

@@ -3,6 +3,7 @@ import authReducer from "../features/auth/authSlice";
 import scrollReducer from "../features/scroll/scrollSlice";
 import sidebarReducer from "../features/sidebar/sidebarSlice";
 import pgReducer from "../features/pgslice/pgSlice";
+import searchPgReducer from "../features/search/searchPgSlice";
 import {
   persistReducer,
   FLUSH,
@@ -14,11 +15,13 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
+
 const rootReducer = combineReducers({
   auth: authReducer,
   scroll: scrollReducer,
   sidebar: sidebarReducer,
-  pg: pgReducer
+  pg: pgReducer,
+  search: searchPgReducer
 });
 
 const persistConfig = {

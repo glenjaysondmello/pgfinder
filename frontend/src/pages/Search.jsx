@@ -1,46 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import SidebarAction from "../actionfunctions/SidebarAction";
 import { Link } from "react-router-dom";
 import Loader from "../animations/Loader";
-import axios from "axios";
 import BannerAction from "../actionfunctions/BannerAction";
+import { useDispatch, useSelector } from "react-redux";
+import { searchPgs, setQuery } from "../features/search/searchPgSlice";
 
 const Search = () => {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const {query, results, loading, error} = useSelector((store) => store.search);
 
-  const token = localStorage.getItem("token");
-
-  const handleSearchChange = async (e) => {
-    const searchValue = e.target.value;
-    setQuery(searchValue);
-
-    if (!searchValue.trim()) {
-      setResults([]);
-      return;
+  useEffect(() => {
+    if(query.trim()) {
+      dispatch(searchPgs(query));
     }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data } = await axios.get(
-        `http://localhost:5000/api/pg/searchPgs?query=${searchValue}`,
-        {
-          Authorization: `Bearer ${token}`,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setResults(data);
-    } catch (error) {
-      setError("Error fetching search results");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [query, dispatch]);
 
   return (
     <div>
@@ -55,7 +30,7 @@ const Search = () => {
               className="w-full py-3 pl-12 pr-4 text-gray-700 bg-transparent rounded-lg outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Search PG by name, location, or amenities..."
               value={query}
-              onChange={handleSearchChange}
+              onChange={(e) => dispatch(setQuery(e.target.value))}
             />
           </div>
         </div>
