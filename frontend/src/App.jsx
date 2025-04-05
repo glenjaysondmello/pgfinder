@@ -10,20 +10,70 @@ import AdminDashboard from "./adminpage/AdminDashboard";
 import AddPg from "./adminpage/AddPg";
 import GetPg from "./adminpage/GetPg";
 import PgDetails from "./pages/PgDetails";
+import { useSelector } from "react-redux";
+import PrivateRoute from "./privateroute/PrivateRoute";
 
 const App = () => {
+  const { token } = useSelector((store) => store.auth);
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/chatbot" element={<Chatbot />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/addpg" element={<AddPg />} />
-        <Route path="/admin/getpg" element={<GetPg />} />
-        <Route path="/search/pg/:id" element={<PgDetails />} />
+        {!token && (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </>
+        )}
+
+        <Route
+          path="/search"
+          element={
+            <PrivateRoute>
+              <Search />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/chatbot"
+          element={
+            <PrivateRoute>
+              <Chatbot />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/addpg"
+          element={
+            <PrivateRoute>
+              <AddPg />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/getpg"
+          element={
+            <PrivateRoute>
+              <GetPg />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/search/pg/:id"
+          element={
+            <PrivateRoute>
+              <PgDetails />
+            </PrivateRoute>
+          }
+        />
       </Routes>
       <Toaster position="top-center" reverseOrder={false} />
     </Router>
