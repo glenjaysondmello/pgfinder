@@ -8,6 +8,7 @@ const pgRoomSchema = new mongoose.Schema({
   amenities: { type: [String], required: true },
   price: { type: Number, required: true },
   availability: { type: Boolean, default: true },
+  description: {type: String, default: true},
   images: { type: [String], required: true },
 });
 
