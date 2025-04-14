@@ -16,6 +16,7 @@ const AddPg = () => {
     amenities: "",
     price: "",
     availability: true,
+    description: ""
   });
 
   const [images, setImages] = useState([]);
@@ -51,6 +52,7 @@ const AddPg = () => {
       amenities: "",
       price: "",
       availability: true,
+      description: ""
     });
     setImages([]);
   };
@@ -115,6 +117,15 @@ const AddPg = () => {
             name="price"
             placeholder="Price"
             value={pgData.price}
+            onChange={handleChange}
+            className={inp_box_style}
+            required
+          />
+          <input
+            type="text"
+            name="description"
+            placeholder="Description"
+            value={pgData.description}
             onChange={handleChange}
             className={inp_box_style}
             required

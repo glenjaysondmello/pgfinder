@@ -72,6 +72,9 @@ const Login = () => {
       const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
         headers: { Authorization: `Bearer ${token}`},
       });
+
+      console.log(token);
+      
       
       const { role } = await data;
 

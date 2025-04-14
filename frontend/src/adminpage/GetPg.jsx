@@ -105,6 +105,7 @@ const GetPg = () => {
                   Contact: {pg.contactNumber}
                 </p>
                 <p className="text-sm text-gray-600">Email: {pg.email}</p>
+                <p className="text-sm text-gray-600">Description: {pg.description}</p>
 
                 <div className="mt-2 flex gap-2">
                   <button
@@ -195,6 +196,15 @@ const GetPg = () => {
                   value={editData.email}
                   onChange={(e) =>
                     setEditData({ ...editData, email: e.target.value })
+                  }
+                  className="w-full p-2 border rounded mb-2"
+                />
+                <label className="block text-sm font-semibold">Description</label>
+                <input
+                  type="text"
+                  value={editData.description}
+                  onChange={(e) =>
+                    setEditData({ ...editData, description: e.target.value })
                   }
                   className="w-full p-2 border rounded mb-2"
                 />
