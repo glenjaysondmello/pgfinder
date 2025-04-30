@@ -18,7 +18,7 @@ const Sidebar = () => {
     {
       icon: <SiChatbot size="24px" color="white" />,
       text: "Chat",
-      browse: () => navigate("/chat"),
+      browse: () => navigate("/chatbot"),
     },
     {
       icon: <PiShoppingCartSimpleFill size="24px" color="white" />,
