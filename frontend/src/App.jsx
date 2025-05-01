@@ -12,8 +12,11 @@ import GetPg from "./adminpage/GetPg";
 import PgDetails from "./pages/PgDetails";
 import { useSelector } from "react-redux";
 import PrivateRoute from "./privateroute/PrivateRoute";
+import useFirebaseAuthListener from "./actionfunctions/useFirebaseAuthListener";
 
 const App = () => {
+  useFirebaseAuthListener();
+  
   const { token } = useSelector((store) => store.auth);
   return (
     <Router>

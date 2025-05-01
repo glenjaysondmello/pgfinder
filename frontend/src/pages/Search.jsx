@@ -37,7 +37,7 @@ const Search = () => {
       </div>
 
       {loading && <div className="flex items-center justify-center mt-60"><Loader/></div>}
-      {error && <p className="mt-4 text-red-500 flex items-center justify-center">{error}</p>}
+      {error && <p className="mt-4 text-red-500 flex items-center justify-center">Error</p>}
 
       <div className="mt-6 w-[75%] ml-48">
         {results.length > 0 ? (
