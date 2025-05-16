@@ -10,13 +10,14 @@ import AdminDashboard from "./adminpage/AdminDashboard";
 import AddPg from "./adminpage/AddPg";
 import GetPg from "./adminpage/GetPg";
 import PgDetails from "./pages/PgDetails";
+import Cart from "./pages/Cart";
 import { useSelector } from "react-redux";
 import PrivateRoute from "./privateroute/PrivateRoute";
 import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
   useFirebaseAuthListener();
-  
+
   const { token } = useSelector((store) => store.auth);
   return (
     <Router>
@@ -74,6 +75,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <PgDetails />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
             </PrivateRoute>
           }
         />

@@ -31,8 +31,9 @@ export const addPg = createAsyncThunk(
         if (key === "images") {
           pgData.images.forEach((image) => formData.append("images", image));
         } else if (key === "amenities") {
-          pgData.amenities.split(",").forEach((a) => formData.append("amenities", a.trim()));
-
+          pgData.amenities
+            .split(",")
+            .forEach((a) => formData.append("amenities", a.trim()));
         } else {
           formData.append(key, pgData[key]);
         }
@@ -107,8 +108,28 @@ export const updatePg = createAsyncThunk(
 
 const pgSlice = createSlice({
   name: "pg",
-  initialState: { pgRooms: [], selectedPg: null, status: "idle", error: null },
-  reducers: {},
+  initialState: {
+    pgRooms: [],
+    selectedPg: null,
+    cart: [],
+    status: "idle",
+    error: null,
+  },
+  reducers: {
+    addToCart: (state, action) => {
+      const pg = action.payload;
+      
+      if (!Array.isArray(state.cart)) {
+        state.cart = [];
+      }
+
+      const isAlreadyInCart = state.cart.some((item) => item._id === pg._id);
+
+      if (!isAlreadyInCart) {
+        state.cart.push(pg);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPgs.pending, (state) => {
@@ -167,5 +188,7 @@ const pgSlice = createSlice({
       });
   },
 });
+
+export const { addToCart } = pgSlice.actions;
 
 export default pgSlice.reducer;

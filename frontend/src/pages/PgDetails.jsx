@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getPg } from "../features/pgslice/pgSlice";
+import { getPg, addToCart } from "../features/pgslice/pgSlice";
 import Loader from "../animations/Loader";
+import toast from "react-hot-toast";
 
 const PgDetails = () => {
   const { id } = useParams();
@@ -14,6 +15,19 @@ const PgDetails = () => {
       dispatch(getPg(id)).unwrap();
     }
   }, [dispatch, id]);
+
+  const handleAddCart = () => {
+    try {
+      if (selectedPg && selectedPg._id) {
+        dispatch(addToCart(selectedPg));
+        toast.success("Added to Cart");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add to cart");
+      
+    }
+  };
 
   if (status === "loading") {
     return (
@@ -31,19 +45,42 @@ const PgDetails = () => {
     <div className="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-lg rounded-2xl">
       {selectedPg ? (
         <div className="space-y-4">
-          <h2 className="text-3xl font-bold text-gray-800">{selectedPg.name}</h2>
-          <p className="text-gray-600 text-lg"><span className="font-semibold">Location:</span> {selectedPg.location}</p>
-          <p className="text-gray-600"><span className="font-semibold">Contact Number:</span> {selectedPg.contactNumber}</p>
-          <p className="text-gray-600"><span className="font-semibold">Email:</span> {selectedPg.email}</p>
-          <p className="text-gray-600"><span className="font-semibold">Amenities:</span> {selectedPg.amenities}</p>
-          <p className="text-gray-600"><span className="font-semibold">Price:</span> ₹{selectedPg.price}</p>
+          <h2 className="text-3xl font-bold text-gray-800">
+            {selectedPg.name}
+          </h2>
+          <p className="text-gray-600 text-lg">
+            <span className="font-semibold">Location:</span>{" "}
+            {selectedPg.location}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Contact Number:</span>{" "}
+            {selectedPg.contactNumber}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Email:</span> {selectedPg.email}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Amenities:</span>{" "}
+            {selectedPg.amenities}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Price:</span> ₹{selectedPg.price}
+          </p>
           <p className="text-gray-600">
             <span className="font-semibold">Availability:</span>{" "}
-            <span className={selectedPg.availability ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+            <span
+              className={
+                selectedPg.availability
+                  ? "text-green-600 font-medium"
+                  : "text-red-600 font-medium"
+              }
+            >
               {selectedPg.availability ? "Available" : "Not Available"}
             </span>
           </p>
-          <p className="text-gray-700 leading-relaxed">{selectedPg.description}</p>
+          <p className="text-gray-700 leading-relaxed">
+            {selectedPg.description}
+          </p>
 
           <div className="mt-6">
             <h3 className="text-xl font-semibold mb-2">Gallery</h3>
@@ -61,6 +98,15 @@ const PgDetails = () => {
             ) : (
               <p className="text-gray-500">No Images Available</p>
             )}
+          </div>
+
+          <div className="mt-4">
+            <button
+              onClick={handleAddCart}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-4 rounded-lg"
+            >
+              Add To Cart
+            </button>
           </div>
         </div>
       ) : (
