@@ -63,9 +63,9 @@ const GetPg = () => {
       </h2>
 
       {status === "loading" && (
-        <p className="flex items-center justify-center mt-60">
+        <div className="flex items-center justify-center mt-60">
           <Loader />
-        </p>
+        </div>
       )}
       {status === "failed" && <p className="text-red-500">Error</p>}
 
