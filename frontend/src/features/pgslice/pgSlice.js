@@ -108,12 +108,16 @@ export const updatePg = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async (pgRoomId, { rejectWithValue }) => {
+  async ({ pgRoomId, quantity = 1 }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${API_URL}/cart/addcart`, pgRoomId, {
-        headers: getAuthHeaders(),
-        withCredentials: true,
-      });
+      const { data } = await axios.post(
+        `${API_URL}/cart/addcart`,
+        { pgRoomId, quantity },
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
 
       return data;
     } catch (error) {
@@ -172,21 +176,7 @@ const pgSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {
-    addToCart: (state, action) => {
-      const pg = action.payload;
-
-      if (!Array.isArray(state.cart)) {
-        state.cart = [];
-      }
-
-      const isAlreadyInCart = state.cart.some((item) => item._id === pg._id);
-
-      if (!isAlreadyInCart) {
-        state.cart.push(pg);
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchPgs.pending, (state) => {
@@ -255,11 +245,21 @@ const pgSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
-        state.cart.push(action.payload);
+        const item = action.payload;
+
+        if (item && item.pgId) {
+          const isAlreadyInCart = state.cart.some(
+            (cartItem) => cartItem.pgId !== item.pgId
+          );
+
+          if (!isAlreadyInCart) {
+            state.cart.push(item);
+          }
+        }
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.cart = state.cart.filter((item) => item._id !== action.payload);
-      })
+      });
   },
 });
 

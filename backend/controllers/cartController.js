@@ -1,6 +1,5 @@
 const { mongoose } = require("mongoose");
 const Cart = require("../models/Cart");
-const PgRoom = require("../models/PgRoom");
 
 const addToCart = async (req, res) => {
   try {
@@ -58,6 +57,12 @@ const fetchCartItems = async (req, res) => {
     const { uid } = req.user;
 
     const cart = await Cart.findOne({ userId: uid }).populate("items.pgId");
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    cart.items = cart.items.filter((item) => item.pgId !== null);
 
     res.json(cart);
   } catch (error) {

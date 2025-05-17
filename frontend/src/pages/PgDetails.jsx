@@ -16,16 +16,13 @@ const PgDetails = () => {
     }
   }, [dispatch, id]);
 
-  const handleAddCart = () => {
+  const handleAddCart = (pgRoomId) => {
     try {
-      if (selectedPg && selectedPg._id) {
-        dispatch(addToCart(selectedPg));
-        toast.success("Added to Cart");
-      }
+      dispatch(addToCart({pgRoomId, quantity: 1}));
+      toast.success("Added to Cart");
     } catch (error) {
       console.log(error);
       toast.error("Failed to add to cart");
-      
     }
   };
 
@@ -102,7 +99,7 @@ const PgDetails = () => {
 
           <div className="mt-4">
             <button
-              onClick={handleAddCart}
+              onClick={() => handleAddCart(selectedPg._id)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-4 rounded-lg"
             >
               Add To Cart
