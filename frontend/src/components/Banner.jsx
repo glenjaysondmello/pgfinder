@@ -39,14 +39,12 @@ const Banner = () => {
           </button>
         </div>
 
-        {/* Center - PG FINDER text */}
         <div className="flex-1 flex justify-center items-center">
           <h1 className="text-2xl text-gray-300 font-medium animate-glow absolute left-1/2 transform -translate-x-1/2">
             PG FINDER
           </h1>
         </div>
 
-        {/* Right side - User Profile/Login */}
         <div className="flex items-center justify-end">
           {user ? (
             <>

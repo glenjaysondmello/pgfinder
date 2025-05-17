@@ -28,24 +28,24 @@ const Navbar = () => {
       });
   };
 
-  // useEffect(() => {
-  //   const unSubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
+  useEffect(() => {
+    const unSubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
 
-  //       dispatch(
-  //         setAuthUser({
-  //           uid: user.uid,
-  //           email: user.email,
-  //           displayName: user.displayName,
-  //           photoURL: user.photoURL,
-  //         })
-  //       );
-  //     } else {
-  //       dispatch(setAuthUser(null));
-  //     }
-  //   });
-  //   return () => unSubscribe();
-  // }, [dispatch]);
+        dispatch(
+          setAuthUser({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+          })
+        );
+      } else {
+        dispatch(setAuthUser(null));
+      }
+    });
+    return () => unSubscribe();
+  }, [dispatch]);
 
   return (
     <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 mx-4 my-6 shadow-[0_8px_32px_rgb(0_0_0/0.5)] relative animate-fadeIn">
