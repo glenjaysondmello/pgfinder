@@ -13,10 +13,10 @@ import PgDetails from "./pages/PgDetails";
 import Cart from "./pages/Cart";
 import { useSelector } from "react-redux";
 import PrivateRoute from "./privateroute/PrivateRoute";
-import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
+// import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
-  useFirebaseAuthListener();
+  // useFirebaseAuthListener();
 
   const { token } = useSelector((store) => store.auth);
   return (
