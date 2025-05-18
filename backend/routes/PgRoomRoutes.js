@@ -13,7 +13,7 @@ const { uploadImage } = require("../cloudinary/cloudinaryConfig");
 const router = express.Router();
 
 router.get("/getAllPg", verifyToken, verifyAdmin, getAllPgs);
-router.get("/getPg/:id", verifyToken, verifyAdmin, getPg);
+router.get("/getPg/:id", verifyToken, getPg);
 
 router.post(
   "/addPg",

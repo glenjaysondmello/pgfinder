@@ -15,5 +15,3 @@ const pgRoomSchema = new mongoose.Schema({
 const PgRoom = mongoose.model("PgRoom", pgRoomSchema);
 
 module.exports = PgRoom;
-
-// 67fd1a4a99bd00dc8d735283

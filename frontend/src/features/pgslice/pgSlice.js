@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/pg";
+const API_URL = "http://localhost:5000/api";
 
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -11,7 +11,7 @@ export const fetchPgs = createAsyncThunk(
   "pg/fetchPgs",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`${API_URL}/getAllPg`, {
+      const { data } = await axios.get(`${API_URL}/pg/getAllPg`, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -31,14 +31,15 @@ export const addPg = createAsyncThunk(
         if (key === "images") {
           pgData.images.forEach((image) => formData.append("images", image));
         } else if (key === "amenities") {
-          pgData.amenities.split(",").forEach((a) => formData.append("amenities", a.trim()));
-
+          pgData.amenities
+            .split(",")
+            .forEach((a) => formData.append("amenities", a.trim()));
         } else {
           formData.append(key, pgData[key]);
         }
       });
 
-      const response = await axios.post(`${API_URL}/addPg`, formData, {
+      const response = await axios.post(`${API_URL}/pg/addPg`, formData, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -54,7 +55,7 @@ export const deletePg = createAsyncThunk(
   "pg/deletePg",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API_URL}/deletePg/${id}`, {
+      await axios.delete(`${API_URL}/pg/deletePg/${id}`, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -69,7 +70,7 @@ export const getPg = createAsyncThunk(
   "pg/getPg",
   async (id, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`${API_URL}/getPg/${id}`, {
+      const { data } = await axios.get(`${API_URL}/pg/getPg/${id}`, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -93,7 +94,7 @@ export const updatePg = createAsyncThunk(
         }
       });
 
-      await axios.patch(`${API_URL}/updatePg/${pgData._id}`, formData, {
+      await axios.patch(`${API_URL}/pg/updatePg/${pgData._id}`, formData, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -105,10 +106,81 @@ export const updatePg = createAsyncThunk(
   }
 );
 
+export const addToCart = createAsyncThunk(
+  "cart/addToCart",
+  async ({ pgRoomId, quantity = 1 }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `${API_URL}/cart/addcart`,
+        { pgId: pgRoomId, quantity },
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Error adding to the cart"
+      );
+    }
+  }
+);
+
+export const removeFromCart = createAsyncThunk(
+  "cart/removeFromCart",
+  async (pgRoomId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/cart/removecart/${pgRoomId}`,
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
+
+      return pgRoomId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Error removing from the cart"
+      );
+    }
+  }
+);
+
+export const fetchCart = createAsyncThunk(
+  "cart/fetchCart",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API_URL}/cart/getcart`, {
+        headers: getAuthHeaders(),
+        withCredentials: true,
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "ERror fetching the items from the cart"
+      );
+    }
+  }
+);
+
 const pgSlice = createSlice({
   name: "pg",
-  initialState: { pgRooms: [], selectedPg: null, status: "idle", error: null },
-  reducers: {},
+  initialState: {
+    pgRooms: [],
+    selectedPg: null,
+    cart: [],
+    status: "idle",
+    error: null,
+  },
+  reducers: {
+    clearCart: (state) => {
+      state.cart = [];
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPgs.pending, (state) => {
@@ -164,8 +236,37 @@ const pgSlice = createSlice({
       .addCase(updatePg.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(fetchCart.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.cart = action.payload;
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        const item = action.payload;
+
+        if (item && item.pgId) {
+          const isAlreadyInCart = state.cart.some(
+            (cartItem) => cartItem.pgId !== item.pgId
+          );
+
+          if (!isAlreadyInCart) {
+            state.cart.push(item);
+          }
+        }
+      })
+      .addCase(removeFromCart.fulfilled, (state, action) => {
+        state.cart = state.cart.filter((item) => item._id !== action.payload);
       });
   },
 });
+
+export const {clearCart} = pgSlice.actions;
 
 export default pgSlice.reducer;
