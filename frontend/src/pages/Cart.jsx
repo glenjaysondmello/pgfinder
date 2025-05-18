@@ -13,9 +13,8 @@ const Cart = () => {
 
   const handleRemoveCart = (pgRoomId) => {
     try {
-      dispatch(removeFromCart(pgRoomId));
+      dispatch(removeFromCart(pgRoomId)).unwrap();
       toast.success("Removed Item from Cart");
-      fetchCart();
     } catch (error) {
       console.log(error);
       toast.error("Failed to remove from the cart");

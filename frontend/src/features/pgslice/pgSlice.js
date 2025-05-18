@@ -112,7 +112,7 @@ export const addToCart = createAsyncThunk(
     try {
       const { data } = await axios.post(
         `${API_URL}/cart/addcart`,
-        { pgRoomId, quantity },
+        { pgId: pgRoomId, quantity },
         {
           headers: getAuthHeaders(),
           withCredentials: true,
@@ -176,7 +176,11 @@ const pgSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearCart: (state) => {
+      state.cart = [];
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPgs.pending, (state) => {
@@ -262,5 +266,7 @@ const pgSlice = createSlice({
       });
   },
 });
+
+export const {clearCart} = pgSlice.actions;
 
 export default pgSlice.reducer;
