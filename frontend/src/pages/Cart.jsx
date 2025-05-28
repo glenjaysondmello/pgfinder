@@ -41,6 +41,23 @@ const Cart = () => {
                 <p>Price: ₹{item.pgId.price}</p>
                 <p>Location: {item.pgId.location}</p>
                 <p>Quantity: {item.quantity}</p>
+                <p className="text-sm text-gray-600">
+                  Amenities: {item.pgId.amenities.join(", ")}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Availability:{" "}
+                  {item.pgId.availability ? "Available" : "Not Available"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Contact: {item.pgId.contactNumber}
+                </p>
+                <p className="text-sm text-gray-600">Email: {item.pgId.email}</p>
+                <p className="text-sm text-gray-600">Description: {item.pgId.description}</p>
+                {item.pgId.images?.length > 0 ? (
+                  item.pgId.images.map((image, index) => (
+                    <img key={index} src={image} alt={`PG ${item.pgId.name}`} className="w-full h-20 object-cover rounded"/>
+                  ))
+                ) : (<p className="text-sm text-gray-500 col-span-3">No Images Available</p>)}
                 <button
                   className="bg-red-500 text-white px-4 py-2 mt-2 rounded"
                   onClick={() => handleRemoveCart(item.pgId._id)}
