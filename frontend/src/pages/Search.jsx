@@ -1,25 +1,38 @@
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import SidebarAction from "../actionfunctions/SidebarAction";
 import { Link } from "react-router-dom";
 import Loader from "../animations/Loader";
 import BannerAction from "../actionfunctions/BannerAction";
 import { useDispatch, useSelector } from "react-redux";
-import { searchPgs, setQuery } from "../features/search/searchPgSlice";
+import {
+  searchPgs,
+  setQuery,
+  clearResults,
+} from "../features/search/searchPgSlice";
 
 const Search = () => {
   const dispatch = useDispatch();
-  const {query, results, loading, error} = useSelector((store) => store.search);
+  const { query, results, loading, error } = useSelector(
+    (store) => store.search
+  );
 
   useEffect(() => {
-    if(query.trim()) {
+    return () => {
+      dispatch(setQuery(""));
+      dispatch(clearResults());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (query.trim()) {
       dispatch(searchPgs(query));
     }
   }, [query, dispatch]);
 
   return (
     <div>
-      <BannerAction/>
+      <BannerAction />
       <SidebarAction />
       <div className="w-[75%] ml-48 mt-60">
         <div className="relative flex items-center">
@@ -36,8 +49,16 @@ const Search = () => {
         </div>
       </div>
 
-      {loading && <div className="flex items-center justify-center mt-60"><Loader/></div>}
-      {error && <p className="mt-4 text-red-500 flex items-center justify-center">Error</p>}
+      {loading && (
+        <div className="flex items-center justify-center mt-60">
+          <Loader />
+        </div>
+      )}
+      {error && (
+        <p className="mt-4 text-red-500 flex items-center justify-center">
+          Error
+        </p>
+      )}
 
       <div className="mt-6 w-[75%] ml-48">
         {results.length > 0 ? (

@@ -76,7 +76,7 @@ const Login = () => {
       console.log(token);
       
       
-      const { role } = await data;
+      const { role } = data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
