@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { auth, googleProvider} from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { setAuthUser } from "../features/auth/authSlice";
+import { setAuthUser, setCurrentUser } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -27,6 +27,7 @@ const Login = () => {
       );
       console.log(userCredentials);
       const loggedUser = userCredentials.user;
+      dispatch(setCurrentUser(loggedUser));
       const token = await loggedUser.getIdToken();
       console.log("Token:",token);
 
@@ -67,6 +68,7 @@ const Login = () => {
     try {
       const userCredentials = await signInWithPopup(auth, googleProvider);
       const loggedUser = userCredentials.user;
+      dispatch(setCurrentUser(loggedUser));
       const token = await loggedUser.getIdToken();
 
       const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {

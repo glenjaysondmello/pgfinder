@@ -13,9 +13,11 @@ import PgDetails from "./pages/PgDetails";
 import Cart from "./pages/Cart";
 import { useSelector } from "react-redux";
 import PrivateRoute from "./privateroute/PrivateRoute";
+import useFetchUserRole from "./hooks/useFetchUserRole";
+// import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
-  
+  useFetchUserRole();
 
   const { token } = useSelector((store) => store.auth);
   return (
