@@ -19,7 +19,7 @@ const Sidebar = () => {
       browse: () => navigate("/"),
     },
     {
-      icon: <SiChatbot size="24px" color="white" />,
+      icon: <SiChatbot size="24px" color="white"/>,
       text: "Chat",
       browse: () => navigate("/chatbot"),
     },
@@ -57,7 +57,7 @@ const Sidebar = () => {
       {visibleItems.map((item, index) => (
         <div
           key={index}
-          className="w-full flex items-center gap-3 text-gray-300 hover:text-white transition-colors duration-300 cursor-pointer py-7 px-3 rounded-lg hover:bg-white/10"
+          className="w-full flex items-center gap-3 text-gray-300 hover:text-blue-300 transition-colors duration-300 cursor-pointer py-7 px-3 rounded-lg"
           onClick={item.browse}
         >
           <span className="flex-shrink-0 mr-1">{item.icon}</span>

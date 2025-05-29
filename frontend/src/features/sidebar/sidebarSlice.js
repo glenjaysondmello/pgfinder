@@ -18,6 +18,6 @@ const sidebarSlice = createSlice({
   },
 });
 
-export const { setBarOpen, setCloseBar, setOpenBar } = sidebarSlice.actions;
+export const { setBarOpen, setCloseBar, setOpenBar} = sidebarSlice.actions;
 
 export default sidebarSlice.reducer;

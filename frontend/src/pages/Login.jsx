@@ -27,7 +27,7 @@ const Login = () => {
       );
       console.log(userCredentials);
       const loggedUser = userCredentials.user;
-      dispatch(setCurrentUser(loggedUser));
+      dispatch(setCurrentUser(loggedUser.uid));
       const token = await loggedUser.getIdToken();
       console.log("Token:",token);
 
@@ -68,7 +68,7 @@ const Login = () => {
     try {
       const userCredentials = await signInWithPopup(auth, googleProvider);
       const loggedUser = userCredentials.user;
-      dispatch(setCurrentUser(loggedUser));
+      dispatch(setCurrentUser(loggedUser.uid));
       const token = await loggedUser.getIdToken();
 
       const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {

@@ -57,7 +57,7 @@ const Signup = () => {
 
       console.log(userCredentials);
       const registeredUser = userCredentials.user;
-      dispatch(setCurrentUser(registeredUser));
+      dispatch(setCurrentUser(registeredUser.uid));
 
       try {
         await sendEmailVerification(registeredUser);
@@ -115,7 +115,7 @@ const Signup = () => {
     try {
       const userCredentials = await signInWithPopup(auth, googleProvider);
       const registeredUser = userCredentials.user;
-      dispatch(setCurrentUser(registeredUser));
+      dispatch(setCurrentUser(registeredUser.uid));
       const token = await registeredUser.getIdToken();
 
       const { data } = await axios.get(

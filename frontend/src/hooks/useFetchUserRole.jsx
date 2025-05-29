@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { db } from "../firebase/firebaseConfig";
+import { auth, db } from "../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { setRole } from "../features/auth/authSlice";
 
@@ -10,9 +10,10 @@ const useFetchUserRole = () => {
 
   useEffect(() => {
     const fetchRole = async () => {
-      if (currentUser) {
+      const user = await auth.currentUser;
+      if (user && currentUser) {
         try {
-          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          const userDoc = await getDoc(doc(db, "users", currentUser));
 
           if (userDoc.exists()) {
             const role = userDoc.data().role || "user";
@@ -30,7 +31,7 @@ const useFetchUserRole = () => {
     };
 
     fetchRole();
-  }, [dispatch]);
+  }, [dispatch, currentUser]);
 };
 
 export default useFetchUserRole;
