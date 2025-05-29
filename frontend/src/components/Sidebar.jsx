@@ -53,15 +53,15 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-20 bg-black/30 backdrop-blur-lg flex flex-col items-center px-14 py-6 space-y-6 shadow-[0_8px_32px_rgb(0_0_0/0.5)] z-40 animate-fadeIn mt-32 rounded-2xl ml-5">
+    <div className="fixed top-0 left-0 bg-black/30 backdrop-blur-lg flex flex-col px-6 py-6 space-y-4 shadow-[0_8px_32px_rgb(0_0_0/0.5)] z-40 animate-fadeIn mt-32 rounded-2xl ml-5 w-36">
       {visibleItems.map((item, index) => (
         <div
           key={index}
-          className="flex flex-row items-center text-gray-300 hover:text-white transition-colors duration-300 cursor-pointer animate-slideFromLeft p-5 space-x-4 space-y-2 mr-4 ml-4"
+          className="w-full flex items-center gap-3 text-gray-300 hover:text-white transition-colors duration-300 cursor-pointer py-7 px-3 rounded-lg hover:bg-white/10"
           onClick={item.browse}
         >
-          <span>{item.icon}</span>
-          <p className="text-[15px] mt-2 font-medium">{item.text}</p>
+          <span className="flex-shrink-0 mr-1">{item.icon}</span>
+          <p className="text-sm font-medium">{item.text}</p>
         </div>
       ))}
     </div>

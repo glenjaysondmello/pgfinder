@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { useDispatch } from "react-redux";
-import { setAuthUser } from "../features/auth/authSlice";
+import { setAuthUser, setCurrentUser } from "../features/auth/authSlice";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
@@ -57,6 +57,7 @@ const Signup = () => {
 
       console.log(userCredentials);
       const registeredUser = userCredentials.user;
+      dispatch(setCurrentUser(registeredUser));
 
       try {
         await sendEmailVerification(registeredUser);
@@ -114,6 +115,7 @@ const Signup = () => {
     try {
       const userCredentials = await signInWithPopup(auth, googleProvider);
       const registeredUser = userCredentials.user;
+      dispatch(setCurrentUser(registeredUser));
       const token = await registeredUser.getIdToken();
 
       const { data } = await axios.get(
