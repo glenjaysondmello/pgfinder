@@ -9,6 +9,7 @@ import {
   updatePg,
 } from "../features/pgslice/pgSlice";
 import Loader from "../animations/Loader";
+import SidebarAction from "../actionfunctions/SidebarAction";
 
 const GetPg = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const GetPg = () => {
 
   return (
     <div className="p-6 min-h-screen">
+      <SidebarAction/>
       <BannerAction />
       <h2 className="text-3xl font-bold text-white flex items-center justify-center mt-36 mb-12">
         Admin PG Management

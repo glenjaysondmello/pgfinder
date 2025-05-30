@@ -6,7 +6,7 @@ import { auth } from "../firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
 import { clearAuthUser, setAuthUser } from "../features/auth/authSlice";
 import Avatar from "react-avatar";
-import { setBarOpen } from "../features/sidebar/sidebarSlice";
+import { setBarOpen, setCloseBar } from "../features/sidebar/sidebarSlice";
 import { clearCart } from "../features/pgslice/pgSlice";
 import toast from "react-hot-toast";
 
@@ -23,6 +23,7 @@ const Navbar = () => {
         console.log("Sign Out");
         toast.success("Logged Out Successfully");
         navigate("/");
+        dispatch(setCloseBar());
       })
       .catch((error) => {
         toast.error(error.message);

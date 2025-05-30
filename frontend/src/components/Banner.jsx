@@ -32,7 +32,6 @@ const Banner = () => {
   return (
     <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 mx-4 my-6 shadow-[0_8px_32px_rgb(0_0_0/0.5)] relative animate-fadeIn">
       <div className="flex items-center">
-        {/* Left side - Hamburger Menu */}
         <div className="p-3 hover:bg-gray-700 hover:rounded-full rounded-full cursor-pointer transition-colors duration-300">
           <button onClick={() => dispatch(setBarOpen())}>
             <RxHamburgerMenu size={24} className="text-gray-300" />

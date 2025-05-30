@@ -2,16 +2,15 @@ import React, { useEffect } from "react";
 import { FaHome, FaMoneyBillWave, FaUserFriends } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { setLastScrollY, setShowNavbar } from "../features/scroll/scrollSlice";
+import SidebarAction from "../actionfunctions/SidebarAction";
 
 const Home = () => {
   const dispatch = useDispatch();
   const { showNavbar } = useSelector((store) => store.scroll);
   const { lastScrollY } = useSelector((store) => store.scroll);
-  const { open } = useSelector((store) => store.sidebar);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,9 +41,7 @@ const Home = () => {
         <Navbar />
       </div>
 
-      <div className="fixed top-0 left-0 w-full z-50 transition-transform duration-300">
-        {open && <Sidebar />}
-      </div>
+      <SidebarAction/>
       <section className="mt-72">
         <h1 className="text-3xl font-bold mb-8 text-white flex items-center justify-center">
           Ready to Find Your New Home?
