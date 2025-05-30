@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { auth, googleProvider} from "../firebase/firebaseConfig";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { setAuthUser, setCurrentUser } from "../features/auth/authSlice";
@@ -29,12 +29,15 @@ const Login = () => {
       const loggedUser = userCredentials.user;
       dispatch(setCurrentUser(loggedUser.uid));
       const token = await loggedUser.getIdToken();
-      console.log("Token:",token);
+      console.log("Token:", token);
 
-      const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
-        headers: { Authorization: `Bearer ${token}`},
-      });
-      
+      const { data } = await axios.get(
+        `/api/userrole/getUserRole/${loggedUser.uid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       const { role } = await data;
 
       localStorage.setItem("token", token);
@@ -46,7 +49,7 @@ const Login = () => {
             uid: loggedUser.uid,
             email: loggedUser.email,
             displayName: loggedUser.displayName || "User",
-            role
+            role,
           },
           token,
         })
@@ -71,18 +74,19 @@ const Login = () => {
       dispatch(setCurrentUser(loggedUser.uid));
       const token = await loggedUser.getIdToken();
 
-      const { data } = await axios.get(`/api/userrole/getUserRole/${loggedUser.uid}`, {
-        headers: { Authorization: `Bearer ${token}`},
-      });
+      const { data } = await axios.get(
+        `/api/userrole/getUserRole/${loggedUser.uid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       console.log(token);
-      
-      
+
       const { role } = data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
-
 
       dispatch(
         setAuthUser({
@@ -91,7 +95,7 @@ const Login = () => {
             email: loggedUser.email,
             displayName: loggedUser.displayName,
             photoURL: loggedUser.photoURL,
-            role
+            role,
           },
           token,
         })
@@ -108,6 +112,21 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 to-purple-900 flex items-center justify-center p-4">
+      <div
+        className="absolute top-4 left-4 flex items-center gap-4 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <div className="w-10 h-10 rounded-full overflow-hidden animate-pulse">
+          <img
+            src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180"
+            alt="logo"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h1 className="text-2xl text-gray-300 font-medium animate-glow">
+          PG-Finder
+        </h1>
+      </div>
       <div className="dark-animated-container">
         <h2 className="text-3xl font-bold text-white text-center mb-8">
           Welcome Back

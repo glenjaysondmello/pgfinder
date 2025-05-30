@@ -49,9 +49,11 @@ const Signup = () => {
       );
 
       const isGoogleEmail = await checkGoogleEmail(email);
-      
+
       if (isGoogleEmail) {
-        toast.error("This email is linked to Google. Please sign in with Google.");
+        toast.error(
+          "This email is linked to Google. Please sign in with Google."
+        );
         return;
       }
 
@@ -155,6 +157,21 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 to-purple-900 flex items-center justify-center p-4">
+      <div
+        className="absolute top-4 left-4 flex items-center gap-4 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <div className="w-10 h-10 rounded-full overflow-hidden animate-pulse">
+          <img
+            src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180"
+            alt="logo"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h1 className="text-2xl text-gray-300 font-medium animate-glow">
+          PG-Finder
+        </h1>
+      </div>
       <div className="dark-animated-container">
         <h2 className="text-3xl font-bold text-white text-center mb-8">
           Create Account
