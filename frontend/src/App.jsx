@@ -80,6 +80,14 @@ const App = () => {
           }
         />
         <Route
+          path="/admin/getpg/:id"
+          element={
+            <PrivateRoute>
+              <PgDetails />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/cart"
           element={
             <PrivateRoute>

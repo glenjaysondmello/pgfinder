@@ -10,6 +10,7 @@ import {
 } from "../features/pgslice/pgSlice";
 import Loader from "../animations/Loader";
 import SidebarAction from "../actionfunctions/SidebarAction";
+import { Link } from "react-router-dom";
 
 const GetPg = () => {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const GetPg = () => {
 
       await dispatch(updatePg(editData)).unwrap();
       toast.success("PG updated successfully");
-      
+
       dispatch(fetchPgs());
 
       setEditData(null);
@@ -58,7 +59,7 @@ const GetPg = () => {
 
   return (
     <div className="p-6 min-h-screen">
-      <SidebarAction/>
+      <SidebarAction />
       <BannerAction />
       <h2 className="text-3xl font-bold text-white flex items-center justify-center mt-36 mb-12">
         Admin PG Management
@@ -76,38 +77,45 @@ const GetPg = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pgRooms.map((pg) => (
               <div key={pg._id} className="bg-white p-4 shadow-md rounded-lg">
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  {pg.images?.length > 0 ? (
-                    pg.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`PG ${pg.name}`}
-                        className="w-full h-20 object-cover rounded"
-                      />
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 col-span-3">
-                      No Images Available
+                <Link to={`/admin/getpg/${pg._id}`}>
+                  <div>
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      {pg.images?.length > 0 ? (
+                        pg.images.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`PG ${pg.name}`}
+                            className="w-full h-20 object-cover rounded"
+                          />
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500 col-span-3">
+                          No Images Available
+                        </p>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                      {pg.name} - {pg.location}
+                    </h3>
+
+                    <p className="text-sm text-gray-600">
+                      Amenities: {pg.amenities.join(", ")}
                     </p>
-                  )}
-                </div>
-                <h3 className="text-lg font-semibold">
-                  {pg.name} - {pg.location}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Amenities: {pg.amenities.join(", ")}
-                </p>
-                <p className="text-sm text-gray-600">Price: ₹{pg.price}</p>
-                <p className="text-sm text-gray-600">
-                  Availability:{" "}
-                  {pg.availability ? "Available" : "Not Available"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Contact: {pg.contactNumber}
-                </p>
-                <p className="text-sm text-gray-600">Email: {pg.email}</p>
-                <p className="text-sm text-gray-600">Description: {pg.description}</p>
+                    <p className="text-sm text-gray-600">Price: ₹{pg.price}</p>
+                    <p className="text-sm text-gray-600">
+                      Availability:{" "}
+                      {pg.availability ? "Available" : "Not Available"}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Contact: {pg.contactNumber}
+                    </p>
+                    <p className="text-sm text-gray-600">Email: {pg.email}</p>
+                    <p className="text-sm text-gray-600">
+                      Description: {pg.description}
+                    </p>
+                  </div>
+                </Link>
 
                 <div className="mt-2 flex gap-2">
                   <button
@@ -128,7 +136,7 @@ const GetPg = () => {
           </div>
 
           {editData && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded shadow-lg w-96">
                 <h3 className="text-xl font-semibold mb-2">Edit PG Details</h3>
                 <label className="block text-sm font-semibold">Name</label>
@@ -201,7 +209,9 @@ const GetPg = () => {
                   }
                   className="w-full p-2 border rounded mb-2"
                 />
-                <label className="block text-sm font-semibold">Description</label>
+                <label className="block text-sm font-semibold">
+                  Description
+                </label>
                 <input
                   type="text"
                   value={editData.description}
