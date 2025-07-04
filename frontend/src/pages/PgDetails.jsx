@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getPg, addToCart } from "../features/pgslice/pgSlice";
+import { payment, verify } from "../features/payment/paymentSlice";
 import Loader from "../animations/Loader";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -49,38 +50,27 @@ const PgDetails = () => {
     return <p className="text-red-600 text-center mt-4">Error: {error}</p>;
   }
 
-  const handlePayment = async () => {
+  const handlePayment = async (amt) => {
     try {
-      const { data: order } = await axios.post(
-        "http://localhost:5000/api/pay/payment",
-        {
-          amount: 500,
-        }
-      );
+      const result = await dispatch(payment(amt)).unwrap();
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
+        amount: result.amount,
         currency: "INR",
         name: "MY PG",
         description: "Payment of PG",
-        order_id: order.id,
+        order_id: result.id,
         handler: async function (res) {
-          try {
-            const verifyResponse = await axios.post(
-              "http://localhost:5000/api/pay/verify",
-              {
-                razorpay_order_id: res.razorpay_order_id,
-                razorpay_payment_id: res.razorpay_payment_id,
-                razorpay_signature: res.razorpay_signature,
-              }
-            );
-
-            alert(verifyResponse.data.message);
-          } catch (error) {
-            console.error("Verification Failed", error);
-            alert("Payment verification failed");
-          }
+          await dispatch(
+            verify({
+              razorpay_order_id: res.razorpay_order_id,
+              razorpay_payment_id: res.razorpay_payment_id,
+              razorpay_signature: res.razorpay_signature,
+              amount: result.amount / 100,
+            })
+          ).unwrap();
+          toast.success("Payment Successful");
         },
         theme: {
           color: "#38bdf8",
@@ -91,7 +81,7 @@ const PgDetails = () => {
       rzp.open();
     } catch (error) {
       console.error("Payment Initiation Failed", error);
-      alert("Payment Initiation Failed");
+      toast.error("Payment failed", error);
     }
   };
 
@@ -163,10 +153,10 @@ const PgDetails = () => {
             </button>
 
             <button
-              onClick={handlePayment}
+              onClick={() => handlePayment(selectedPg.price)}
               className="bg-green-600 hover:bg-green-700 text-white px-2 py-4 rounded-lg"
             >
-              Pay 500
+              Pay {selectedPg.price}
             </button>
           </div>
         </div>
