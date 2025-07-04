@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getPg, addToCart } from "../features/pgslice/pgSlice";
 import Loader from "../animations/Loader";
 import toast from "react-hot-toast";
-
+import axios from "axios";
 
 const PgDetails = () => {
   const { id } = useParams();
@@ -19,7 +19,6 @@ const PgDetails = () => {
   }, [dispatch, id]);
 
   const handleAddCart = (pgRoomId) => {
-
     try {
       const itemExists = cart?.items?.some(
         (item) => item.pgId._id === pgRoomId
@@ -49,6 +48,52 @@ const PgDetails = () => {
   if (status === "error") {
     return <p className="text-red-600 text-center mt-4">Error: {error}</p>;
   }
+
+  const handlePayment = async () => {
+    try {
+      const { data: order } = await axios.post(
+        "http://localhost:5000/api/pay/payment",
+        {
+          amount: 500,
+        }
+      );
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: "INR",
+        name: "MY PG",
+        description: "Payment of PG",
+        order_id: order.id,
+        handler: async function (res) {
+          try {
+            const verifyResponse = await axios.post(
+              "http://localhost:5000/api/pay/verify",
+              {
+                razorpay_order_id: res.razorpay_order_id,
+                razorpay_payment_id: res.razorpay_payment_id,
+                razorpay_signature: res.razorpay_signature,
+              }
+            );
+
+            alert(verifyResponse.data.message);
+          } catch (error) {
+            console.error("Verification Failed", error);
+            alert("Payment verification failed");
+          }
+        },
+        theme: {
+          color: "#38bdf8",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment Initiation Failed", error);
+      alert("Payment Initiation Failed");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-lg rounded-2xl">
@@ -109,12 +154,19 @@ const PgDetails = () => {
             )}
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 flex justify-between">
             <button
               onClick={() => handleAddCart(selectedPg._id)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-4 rounded-lg"
             >
               Add To Cart
+            </button>
+
+            <button
+              onClick={handlePayment}
+              className="bg-green-600 hover:bg-green-700 text-white px-2 py-4 rounded-lg"
+            >
+              Pay 500
             </button>
           </div>
         </div>
