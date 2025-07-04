@@ -5,6 +5,7 @@ const connectDB = require("./db/connectDB");
 const pgRoomRoutes = require("./routes/PgRoomRoutes");
 const userRoleRoutes = require("./routes/userRoleRouter");
 const cartRoutes = require("./routes/cartRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use(
 app.use("/api/pg", pgRoomRoutes);
 app.use("/api/userrole", userRoleRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/pay", paymentRoutes);
 
 connectDB();
 
