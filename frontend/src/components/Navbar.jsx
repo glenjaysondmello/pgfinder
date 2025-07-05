@@ -15,6 +15,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   const logOut = () => {
     signOut(auth)
       .then(() => {
@@ -86,7 +88,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center justify-end w-[300px]">
-          {user ? (
+          {(user && token != null) ? (
             <>
               <div className="flex items-center gap-10 animate-slideFromRight">
                 <div className="flex items-center gap-4">

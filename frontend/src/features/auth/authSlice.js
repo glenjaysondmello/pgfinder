@@ -10,8 +10,14 @@ const authSlice = createSlice({
   },
   reducers: {
     setAuthUser: (state, action) => {
-      state.user = action.payload;
-      state.token = action.payload;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.role = action.payload.role;
+      state.currentUser = action.payload.user.uid;
+
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("role", action.payload.role);
     },
     clearAuthUser: (state) => {
       state.user = null;
@@ -21,16 +27,18 @@ const authSlice = createSlice({
 
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      localStorage.removeItem("role");
     },
     setRole: (state, action) => {
       state.role = action.payload;
     },
     setCurrentUser: (state, action) => {
       state.currentUser = action.payload;
-    }
+    },
   },
 });
 
-export const { setAuthUser, clearAuthUser, setRole, setCurrentUser } = authSlice.actions;
+export const { setAuthUser, clearAuthUser, setRole, setCurrentUser } =
+  authSlice.actions;
 
 export default authSlice.reducer;
