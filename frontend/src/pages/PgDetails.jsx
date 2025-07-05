@@ -56,7 +56,7 @@ const PgDetails = () => {
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: result.amount,
+        amount: result.amount * 100,
         currency: "INR",
         name: "MY PG",
         description: "Payment of PG",

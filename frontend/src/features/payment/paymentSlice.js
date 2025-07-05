@@ -19,7 +19,7 @@ export const payment = createAsyncThunk(
 
       return data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Error fetching the data");
+      return rejectWithValue(error.response?.data || "Error Sending the data");
     }
   }
 );
@@ -35,6 +35,22 @@ export const verify = createAsyncThunk(
 
       return data;
     } catch (error) {
+      return rejectWithValue(error.response?.data || "Error Sending the data");
+    }
+  }
+);
+
+export const payments = createAsyncThunk(
+  "pay/payments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API_URL}/payments`, {
+        headers: getAuthHeaders(),
+        withCredentials: true,
+      });
+
+      return data;
+    } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching the data");
     }
   }
@@ -43,22 +59,48 @@ export const verify = createAsyncThunk(
 const paymentSlice = createSlice({
   name: "payment",
   initialState: {
-    status: "idle",
+    paymentStatus: "idle",
+    verifyStatus: "idle",
+    fetchPaymentsStatus: "idle",
     order: null,
+    history: [],
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(payment.pending, (state) => {
-        state.status = "loading";
+        state.paymentStatus = "loading";
       })
       .addCase(payment.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.paymentStatus = "succeeded";
         state.order = action.payload;
       })
       .addCase(payment.rejected, (state, action) => {
-        state.status = "failed";
+        state.paymentStatus = "failed";
+        state.error = action.payload;
+      })
+
+      .addCase(verify.pending, (state) => {
+        state.verifyStatus = "loading";
+      })
+      .addCase(verify.fulfilled, (state) => {
+        state.verifyStatus = "succeeded";
+      })
+      .addCase(verify.rejected, (state, action) => {
+        state.verifyStatus = "failed";
+        state.error = action.payload;
+      })
+
+      .addCase(payments.pending, (state) => {
+        state.fetchPaymentsStatus = "loading";
+      })
+      .addCase(payments.fulfilled, (state, action) => {
+        state.fetchPaymentsStatus = "succeeded";
+        state.history = action.payload;
+      })
+      .addCase(payments.rejected, (state, action) => {
+        state.fetchPaymentsStatus = "failed";
         state.error = action.payload;
       });
   },

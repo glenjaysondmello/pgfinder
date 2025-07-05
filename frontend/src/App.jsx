@@ -14,6 +14,8 @@ import Cart from "./pages/Cart";
 import { useSelector } from "react-redux";
 import PrivateRoute from "./privateroute/PrivateRoute";
 import useFetchUserRole from "./hooks/useFetchUserRole";
+import Settings from "./pages/Settings";
+import Payments from "./pages/Payments";
 // import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
@@ -92,6 +94,22 @@ const App = () => {
           element={
             <PrivateRoute>
               <Cart />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings/payments"
+          element={
+            <PrivateRoute>
+              <Payments />
             </PrivateRoute>
           }
         />

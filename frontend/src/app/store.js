@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
   sidebar: sidebarReducer,
   pg: pgReducer,
   search: searchPgReducer,
-  payment: paymentReducer,
+  pay: paymentReducer,
 });
 
 const persistConfig = {
