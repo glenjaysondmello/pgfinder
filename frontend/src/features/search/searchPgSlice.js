@@ -39,7 +39,9 @@ const searchSlice = createSlice({
     },
     clearResults: (state) => {
       state.results = [];
-    }
+      state.loading = false;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder

@@ -9,23 +9,48 @@ import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { role } = useSelector((store) => store.auth) || {};
+  const { role } = useSelector((store) => store.auth);
   const [visibleItems, setVisibleItems] = useState([]);
 
   const items = [
-    { icon: <FaHome size="24px" color="white" />, text: "Home", browse: () => navigate("/") },
-    { icon: <SiChatbot size="24px" color="white"/>, text: "Chat", browse: () => navigate("/chatbot") },
-    { icon: <PiShoppingCartSimpleFill size="24px" color="white" />, text: "Your List", browse: () => navigate("/cart") },
-    { icon: <IoSettingsSharp size="24px" color="white" />, text: "Settings", browse: () => navigate("/settings") },
-    { icon: <CgProfile size="24px" color="white" />, text: "Admin", browse: () => navigate("/admin") },
+    {
+      icon: <FaHome size="24px" color="white" />,
+      text: "Home",
+      browse: () => navigate("/"),
+    },
+    {
+      icon: <SiChatbot size="24px" color="white"/>,
+      text: "Chat",
+      browse: () => navigate("/chatbot"),
+    },
+    {
+      icon: <PiShoppingCartSimpleFill size="24px" color="white" />,
+      text: "Your List",
+      browse: () => navigate("/cart"),
+    },
+    {
+      icon: <IoSettingsSharp size="24px" color="white" />,
+      text: "Settings",
+      browse: () => navigate("/settings"),
+    },
+    {
+      icon: <CgProfile size="24px" color="white" />,
+      text: "Admin",
+      browse: () => navigate("/admin"),
+    },
   ];
 
   useEffect(() => {
-    const filteredItems = role === "admin"
-      ? items
-      : items.filter((item) => item.text !== "Admin");
-    setVisibleItems(filteredItems);
+    if (!role || role !== "admin") {
+      setVisibleItems(filterOutAdmin());
+    } else {
+      setVisibleItems(items);
+    }
   }, [role]);
+
+  const filterOutAdmin = () => {
+    return items.filter((item) => item.text != "Admin");
+  };
 
   return (
     <div className="fixed top-0 left-0 bg-black/30 backdrop-blur-lg flex flex-col px-6 py-6 space-y-4 shadow-[0_8px_32px_rgb(0_0_0/0.5)] z-40 animate-fadeIn mt-32 rounded-2xl ml-5 w-36">

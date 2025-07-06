@@ -93,7 +93,7 @@ const Search = () => {
             ))}
           </ul>
         ) : (
-          !loading && <p className="mt-4 text-gray-500">No results found.</p>
+          !loading && !error && <p className="mt-4 text-gray-500 text-center">No results found for {query}</p>
         )}
       </div>
     </div>
