@@ -2,14 +2,16 @@ const express = require("express");
 const {
   payment,
   verify,
-  payments,
+  userPayments,
+  adminPayments,
 } = require("../controllers/paymentController");
-const { verifyToken } = require("../middlewares/authMiddleware");
+const { verifyAdmin, verifyToken } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
 router.post("/payment", verifyToken, payment);
 router.post("/verify", verifyToken, verify);
-router.get("/payments", verifyToken, payments);
+router.get("/payments", verifyToken, userPayments);
+router.get("/payments", verifyAdmin, verifyToken, adminPayments);
 
 module.exports = router;

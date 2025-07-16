@@ -27,6 +27,7 @@ const payment = async (req, res) => {
 };
 
 const verify = async (req, res) => {
+  const { uid, email } = req.user;
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } =
     req.body;
 
@@ -40,6 +41,8 @@ const verify = async (req, res) => {
   if (expectedSignature === razorpay_signature) {
     try {
       await Payment.create({
+        user: uid,
+        email,
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
@@ -57,13 +60,29 @@ const verify = async (req, res) => {
   }
 };
 
-const payments = async (req, res) => {
+const userPayments = async (req, res) => {
   try {
-    const payments = await Payment.find().sort({ createdAt: -1 });
+    const { uid } = req.user;
+    const payments = await Payment.find({ user: uid }).sort({ createdAt: -1 });
     res.status(200).json(payments);
   } catch (error) {
+    console.error("payment fetch error for user", error);
     res.status(500).json({ error: "Failed to fetch the payments" });
   }
 };
 
-module.exports = {payment, verify, payments};
+const adminPayments = async (req, res) => {
+  const { role } = req.user;
+
+  if (role !== "admin") return res.status(403).json({ error: "Admin's only" });
+
+  try {
+    const payments = await Payment.find().sort({ createdAt: -1 });
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error("payment fetch error for admin", error);
+    res.status(500).json({ error: "Failed to fetch the payments" });
+  }
+};
+
+module.exports = { payment, verify, userPayments, adminPayments };
