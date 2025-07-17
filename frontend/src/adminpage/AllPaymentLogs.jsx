@@ -21,32 +21,52 @@ const AllPaymentLogs = () => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl mb-4">Admin Payment Logs</h2>
-      {history?.length === 0 ? (
-        <p>No payments found.</p>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 className="text-3xl font-bold text-center text-white mb-8">
+        Payment History
+      </h1>
+
+      {history.length === 0 ? (
+        <p className="text-center text-gray-500 text-lg">No payments found.</p>
       ) : (
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Amount</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((payment) => (
-              <tr key={payment._id}>
-                <td>{payment?.email || "N/A"}</td>
-                <td>₹{payment?.amount ? payment.amount / 100 : "N/A"}</td>
-                <td>{new Date(payment?.createdAt).toLocaleDateString()}</td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="text-left py-3 px-4 font-semibold">Date</th>
+                <th className="text-left py-3 px-4 font-semibold">
+                  Payment ID
+                </th>
+                <th className="text-left py-3 px-4 font-semibold">Amount</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {history.map((payment) => (
+                <tr
+                  key={payment._id}
+                  className="border-b hover:bg-gray-50 transition-colors"
+                >
+                  <td className="py-3 px-4">
+                    {new Date(payment.createdAt).toLocaleDateString()}
+                  </td>
+                   <td className="py-3 px-4 truncate max-w-xs">
+                    {payment.email}
+                  </td>
+                  <td className="py-3 px-4 truncate max-w-xs">
+                    {payment.razorpay_payment_id}
+                  </td>
+                  <td className="py-3 px-4 text-green-600 font-semibold">
+                    ₹{payment.amount}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 };
 
 export default AllPaymentLogs;
+

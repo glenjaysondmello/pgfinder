@@ -23,7 +23,11 @@ const Payments = () => {
   if (fetchPaymentsStatus === "failed") {
     return (
       <div className="flex justify-center items-center h-screen">
-        return <p className="text-red-600">Error: {error?.error || error || "Failed to fetch"}</p>;
+        return{" "}
+        <p className="text-red-600">
+          Error: {error?.error || error || "Failed to fetch"}
+        </p>
+        ;
       </div>
     );
   }
@@ -61,7 +65,7 @@ const Payments = () => {
                     {payment.razorpay_payment_id}
                   </td>
                   <td className="py-3 px-4 text-green-600 font-semibold">
-                    ₹{payment.amount / 100}
+                    ₹{payment.amount}
                   </td>
                 </tr>
               ))}
