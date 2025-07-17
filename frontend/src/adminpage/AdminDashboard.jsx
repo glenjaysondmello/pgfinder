@@ -1,12 +1,14 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import Banner from "../components/Banner";
+import Navbar from "../components/Navbar";
 import SidebarAction from "../actionfunctions/SidebarAction";
 
 const AdminDashboard = () => {
   return (
     <div>
-      <Banner />
+      {/* <Banner /> */}
+      <Navbar/>
       <SidebarAction />
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center justify-center h-full">

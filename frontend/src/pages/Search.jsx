@@ -3,13 +3,14 @@ import { IoIosSearch } from "react-icons/io";
 import SidebarAction from "../actionfunctions/SidebarAction";
 import { Link } from "react-router-dom";
 import Loader from "../animations/Loader";
-import BannerAction from "../actionfunctions/BannerAction";
+// import BannerAction from "../actionfunctions/BannerAction";
 import { useDispatch, useSelector } from "react-redux";
 import {
   searchPgs,
   setQuery,
   clearResults,
 } from "../features/search/searchPgSlice";
+import Navbar from "../components/Navbar";
 
 const Search = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,8 @@ const Search = () => {
 
   return (
     <div>
-      <BannerAction />
+      {/* <BannerAction /> */}
+      <Navbar/>
       <SidebarAction />
       <div className="w-[75%] ml-48 mt-60">
         <div className="relative flex items-center">

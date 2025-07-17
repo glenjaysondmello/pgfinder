@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { adminLogs } from "../features/payment/paymentSlice";
+import Loader from "../animations/Loader";
 
 const AllPaymentLogs = () => {
   const dispatch = useDispatch();
@@ -13,11 +14,17 @@ const AllPaymentLogs = () => {
   }, [dispatch]);
 
   if (fetchPaymentsStatus === "loading") {
-    return <p>Loading payment logs...</p>;
+    <div className="flex items-center justify-center mt-60">
+      <Loader />
+    </div>;
   }
 
   if (fetchPaymentsStatus === "failed") {
-    return <p className="text-red-600">Error: {error?.error || error || "Failed to fetch"}</p>;
+    return (
+      <p className="text-red-600">
+        Error: {error?.error || error || "Failed to fetch"}
+      </p>
+    );
   }
 
   return (
@@ -49,7 +56,7 @@ const AllPaymentLogs = () => {
                   <td className="py-3 px-4">
                     {new Date(payment.createdAt).toLocaleDateString()}
                   </td>
-                   <td className="py-3 px-4 truncate max-w-xs">
+                  <td className="py-3 px-4 truncate max-w-xs">
                     {payment.email}
                   </td>
                   <td className="py-3 px-4 truncate max-w-xs">
@@ -69,4 +76,3 @@ const AllPaymentLogs = () => {
 };
 
 export default AllPaymentLogs;
-
