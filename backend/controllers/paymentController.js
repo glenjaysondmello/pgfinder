@@ -72,10 +72,6 @@ const userPayments = async (req, res) => {
 };
 
 const adminPayments = async (req, res) => {
-  const { role } = req.user;
-
-  if (role !== "admin") return res.status(403).json({ error: "Admin's only" });
-
   try {
     const payments = await Payment.find().sort({ createdAt: -1 });
     res.status(200).json(payments);

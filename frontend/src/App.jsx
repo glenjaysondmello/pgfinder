@@ -16,6 +16,7 @@ import PrivateRoute from "./privateroute/PrivateRoute";
 import useAuthInitializer from "./hooks/useAuthInitializer";
 import Settings from "./pages/Settings";
 import Payments from "./pages/Payments";
+import AllPaymentLogs from "./adminpage/AllPaymentLogs";
 // import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
@@ -70,6 +71,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <GetPg />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/payment_logs"
+          element={
+            <PrivateRoute>
+              <AllPaymentLogs />
             </PrivateRoute>
           }
         />

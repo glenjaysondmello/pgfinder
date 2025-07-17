@@ -40,11 +40,27 @@ export const verify = createAsyncThunk(
   }
 );
 
-export const payments = createAsyncThunk(
-  "pay/payments",
+export const userLogs = createAsyncThunk(
+  "pay/userLogs",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`${API_URL}/payments`, {
+      const { data } = await axios.get(`${API_URL}/user_logs`, {
+        headers: getAuthHeaders(),
+        withCredentials: true,
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error fetching the data");
+    }
+  }
+);
+
+export const adminLogs = createAsyncThunk(
+  "pay/adminLogs",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API_URL}/admin_logs`, {
         headers: getAuthHeaders(),
         withCredentials: true,
       });
@@ -92,14 +108,26 @@ const paymentSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(payments.pending, (state) => {
+      .addCase(userLogs.pending, (state) => {
         state.fetchPaymentsStatus = "loading";
       })
-      .addCase(payments.fulfilled, (state, action) => {
+      .addCase(userLogs.fulfilled, (state, action) => {
         state.fetchPaymentsStatus = "succeeded";
         state.history = action.payload;
       })
-      .addCase(payments.rejected, (state, action) => {
+      .addCase(userLogs.rejected, (state, action) => {
+        state.fetchPaymentsStatus = "failed";
+        state.error = action.payload;
+      })
+
+      .addCase(adminLogs.pending, (state) => {
+        state.fetchPaymentsStatus = "loading";
+      })
+      .addCase(adminLogs.fulfilled, (state, action) => {
+        state.fetchPaymentsStatus = "succeeded";
+        state.history = action.payload;
+      })
+      .addCase(adminLogs.rejected, (state, action) => {
         state.fetchPaymentsStatus = "failed";
         state.error = action.payload;
       });

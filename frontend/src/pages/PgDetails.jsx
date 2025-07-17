@@ -5,7 +5,6 @@ import { getPg, addToCart } from "../features/pgslice/pgSlice";
 import { payment, verify } from "../features/payment/paymentSlice";
 import Loader from "../animations/Loader";
 import toast from "react-hot-toast";
-import axios from "axios";
 
 const PgDetails = () => {
   const { id } = useParams();

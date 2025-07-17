@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/payment", verifyToken, payment);
 router.post("/verify", verifyToken, verify);
-router.get("/payments", verifyToken, userPayments);
-router.get("/payments", verifyAdmin, verifyToken, adminPayments);
+router.get("/user_logs", verifyToken, userPayments);
+router.get("/admin_logs", verifyToken, verifyAdmin, adminPayments);
 
 module.exports = router;

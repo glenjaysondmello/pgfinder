@@ -21,6 +21,11 @@ const AdminDashboard = () => {
                 ALL PG's
               </div>
             </Link>
+            <Link to="/admin/payment_logs" className="flex">
+              <div className="bg-white/10 text-white p-6 rounded-lg shadow-lg transition transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none font-mono ring-2 ring-slate-500 hover:ring-blue-500">
+                Payment Logs
+              </div>
+            </Link>
           </div>
         </div>
       </div>
