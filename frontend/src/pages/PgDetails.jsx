@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getPg, addToCart } from "../features/pgslice/pgSlice";
 import { payment, verify } from "../features/payment/paymentSlice";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 const PgDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { cart } = useSelector((store) => store.pg);
   const { selectedPg, status, error } = useSelector((store) => store.pg);
 
@@ -72,10 +73,12 @@ const PgDetails = () => {
             })
           ).unwrap();
           toast.success("Payment Successful");
+          navigate("/payment-success", { replace: true });
         },
         theme: {
           color: "#38bdf8",
         },
+        redirect: true,
       };
 
       const rzp = new window.Razorpay(options);

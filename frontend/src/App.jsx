@@ -17,6 +17,7 @@ import useAuthInitializer from "./hooks/useAuthInitializer";
 import Settings from "./pages/Settings";
 import Payments from "./pages/Payments";
 import AllPaymentLogs from "./adminpage/AllPaymentLogs";
+import PaymentSuccess from "./pages/PaymentSuccess";
 // import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
@@ -119,6 +120,15 @@ const App = () => {
           element={
             <PrivateRoute>
               <Payments />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/payment-success"
+          element={
+            <PrivateRoute>
+              <PaymentSuccess />
             </PrivateRoute>
           }
         />
