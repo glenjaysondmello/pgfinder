@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import SidebarAction from "../actionfunctions/SidebarAction";
 import { Link } from "react-router-dom";
@@ -18,18 +18,39 @@ const Search = () => {
     (store) => store.search
   );
 
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query.trim());
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [query]);
+
+  useEffect(() => {
+    if(debouncedQuery) dispatch(searchPgs(debouncedQuery));
+    else dispatch(clearResults());
+  }, [debouncedQuery, dispatch]);
+
   useEffect(() => {
     return () => {
-      dispatch(setQuery(""));
       dispatch(clearResults());
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    if (query.trim()) {
-      dispatch(searchPgs(query));
-    }
-  }, [query, dispatch]);
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(setQuery(""));
+  //     dispatch(clearResults());
+  //   };
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (query.trim()) {
+  //     dispatch(searchPgs(query));
+  //   }
+  // }, [query, dispatch]);
 
   return (
     <div>
@@ -95,7 +116,7 @@ const Search = () => {
             ))}
           </ul>
         ) : (
-          !loading && !error && <p className="mt-4 text-gray-500 text-center">No results found for {query}</p>
+          !loading && !error && <p className="mt-4 text-gray-500 text-center">No results found for {debouncedQuery}</p>
         )}
       </div>
     </div>
