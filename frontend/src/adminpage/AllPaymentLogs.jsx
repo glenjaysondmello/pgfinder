@@ -42,6 +42,12 @@ const AllPaymentLogs = () => {
               <tr>
                 <th className="text-left py-3 px-4 font-semibold">Date</th>
                 <th className="text-left py-3 px-4 font-semibold">
+                  Email
+                </th>
+                <th className="text-left py-3 px-4 font-semibold">
+                  PG ID
+                </th>
+                <th className="text-left py-3 px-4 font-semibold">
                   Payment ID
                 </th>
                 <th className="text-left py-3 px-4 font-semibold">Amount</th>
@@ -58,6 +64,9 @@ const AllPaymentLogs = () => {
                   </td>
                   <td className="py-3 px-4 truncate max-w-xs">
                     {payment.email}
+                  </td>
+                  <td className="py-3 px-4 truncate max-w-xs">
+                    {payment.pgId}
                   </td>
                   <td className="py-3 px-4 truncate max-w-xs">
                     {payment.razorpay_payment_id}

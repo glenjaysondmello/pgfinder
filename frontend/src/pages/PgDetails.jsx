@@ -50,9 +50,9 @@ const PgDetails = () => {
     return <p className="text-red-600 text-center mt-4">Error: {error}</p>;
   }
 
-  const handlePayment = async (amt) => {
+  const handlePayment = async (amt, pgId) => {
     try {
-      const result = await dispatch(payment(amt)).unwrap();
+      const result = await dispatch(payment({amt, pgId})).unwrap();
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -64,6 +64,7 @@ const PgDetails = () => {
         handler: async function (res) {
           await dispatch(
             verify({
+              pgId,
               razorpay_order_id: res.razorpay_order_id,
               razorpay_payment_id: res.razorpay_payment_id,
               razorpay_signature: res.razorpay_signature,
@@ -155,7 +156,7 @@ const PgDetails = () => {
               </button>
 
               <button
-                onClick={() => handlePayment(selectedPg.price)}
+                onClick={() => handlePayment(selectedPg.price, selectedPg._id)}
                 className="bg-green-600 hover:bg-green-700 text-white px-2 py-4 rounded-lg"
               >
                 Pay {selectedPg.price}

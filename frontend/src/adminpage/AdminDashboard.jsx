@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import Banner from "../components/Banner";
+// import Banner from "../components/Banner";
 import Navbar from "../components/Navbar";
 import SidebarAction from "../actionfunctions/SidebarAction";
 

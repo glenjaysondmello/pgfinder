@@ -53,6 +53,9 @@ const Payments = () => {
                 <tr>
                   <th className="text-left py-3 px-4 font-semibold">Date</th>
                   <th className="text-left py-3 px-4 font-semibold">
+                    PG ID
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold">
                     Payment ID
                   </th>
                   <th className="text-left py-3 px-4 font-semibold">Amount</th>
@@ -66,6 +69,9 @@ const Payments = () => {
                   >
                     <td className="py-3 px-4">
                       {new Date(payment.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4 truncate max-w-xs">
+                      {payment.pgId}
                     </td>
                     <td className="py-3 px-4 truncate max-w-xs">
                       {payment.razorpay_payment_id}

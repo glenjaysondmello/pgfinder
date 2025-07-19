@@ -1,5 +1,4 @@
 const Razorpay = require("razorpay");
-const mongoose = require("mongoose");
 const crypto = require("crypto");
 const Payment = require("../models/Payment");
 
@@ -9,7 +8,9 @@ const razorpay = new Razorpay({
 });
 
 const payment = async (req, res) => {
-  const { amount } = req.body;
+  const { pgId, amount } = req.body;
+
+  if(!pgId && !amount) return res.status(400).json({error: "pgId or amount is missing"});
 
   const options = {
     amount: amount * 100,
@@ -28,7 +29,7 @@ const payment = async (req, res) => {
 
 const verify = async (req, res) => {
   const { uid, email } = req.user;
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } =
+  const { pgId, razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } =
     req.body;
 
   const body = `${razorpay_order_id}|${razorpay_payment_id}`;
@@ -42,6 +43,7 @@ const verify = async (req, res) => {
     try {
       await Payment.create({
         user: uid,
+        pgId,
         email,
         razorpay_order_id,
         razorpay_payment_id,
