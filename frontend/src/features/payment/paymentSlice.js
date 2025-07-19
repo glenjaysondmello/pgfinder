@@ -9,11 +9,11 @@ const getAuthHeaders = () => ({
 
 export const payment = createAsyncThunk(
   "pay/payment",
-  async ({amt, pgId}, { rejectWithValue }) => {
+  async ({ amt, pgId }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
         `${API_URL}/payment`,
-        { pgId , amount: amt},
+        { pgId, amount: amt },
         { headers: getAuthHeaders(), withCredentials: true }
       );
 

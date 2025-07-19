@@ -1,6 +1,11 @@
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const PDFDocument = require("pdfkit");
 const Payment = require("../models/Payment");
+const fs = require("fs");
+const path = require("path");
+const PgRoom = require("../models/PgRoom");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -10,7 +15,8 @@ const razorpay = new Razorpay({
 const payment = async (req, res) => {
   const { pgId, amount } = req.body;
 
-  if(!pgId && !amount) return res.status(400).json({error: "pgId or amount is missing"});
+  if (!pgId && !amount)
+    return res.status(400).json({ error: "pgId or amount is missing" });
 
   const options = {
     amount: amount * 100,
@@ -28,9 +34,14 @@ const payment = async (req, res) => {
 };
 
 const verify = async (req, res) => {
-  const { uid, email } = req.user;
-  const { pgId, razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } =
-    req.body;
+  const { uid, email, name } = req.user;
+  const {
+    pgId,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    amount,
+  } = req.body;
 
   const body = `${razorpay_order_id}|${razorpay_payment_id}`;
 
@@ -41,7 +52,7 @@ const verify = async (req, res) => {
 
   if (expectedSignature === razorpay_signature) {
     try {
-      await Payment.create({
+      const paymentData = await Payment.create({
         user: uid,
         pgId,
         email,
@@ -52,7 +63,76 @@ const verify = async (req, res) => {
         status: "success",
       });
 
-      res.status(200).json({ message: "Payment verified and saved" });
+      const invoiceDir = path.join(__dirname, "../invoices");
+
+      if (!fs.existsSync(invoiceDir)) fs.mkdirSync(invoiceDir);
+
+      const doc = new PDFDocument();
+
+      const invoicePath = path.join(
+        invoiceDir,
+        `invoice-${paymentData._id}.pdf`
+      );
+
+      doc.pipe(fs.createWriteStream(invoicePath));
+
+      doc.fontSize(20).text("PG Booking Invoice", { align: "center" });
+      doc.moveDown();
+      doc.fontSize(14).text(`Invoice ID: ${paymentData._id}`);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`);
+      doc.text(`PG ID: ${pgId}`);
+      doc.text(`Booked By: ${name} (${email})`);
+      doc.text(`Amount Paid: Rs.${amount}`);
+      doc.end();
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const pg = await PgRoom.findById(pgId);
+
+      if (!pg) {
+        console.error("PG not found for email notification");
+        return res.status(404).json({ error: "PG not found" });
+      }
+
+      const ownerMailOptions = {
+        from: `"MY PG" <${process.env.EMAIL_USER}>`,
+        to: pg.email,
+        subject: "Your PG has been booked!",
+        text: `Hi ${pg.email},\n\nYour PG (${pg.name}) was booked by ${name} (${email}).\n\nInvoice attached.`,
+        attachments: [
+          {
+            filename: `invoice-${paymentData._id}.pdf`,
+            path: invoicePath,
+          },
+        ],
+      };
+      await transporter.sendMail(ownerMailOptions);
+
+      const userMailOptions = {
+        from: `"MY PG" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "PG Booking Confirmation",
+        text: `Hi ${name},\n\nThank you for booking ${pg.name}.\n\nYour receipt is attached.`,
+        attachments: [
+          {
+            filename: `receipt-${paymentData._id}.pdf`,
+            path: invoicePath,
+          },
+        ],
+      };
+      await transporter.sendMail(userMailOptions);
+
+      console.log("Emails sent to PG owner and user");
+
+      res
+        .status(200)
+        .json({ message: "Payment verified and saved, Emails sent" });
     } catch (error) {
       console.error("DB save error: ", error);
       res.status(500).json({ error: "Payment Varified, but DB save failed" });

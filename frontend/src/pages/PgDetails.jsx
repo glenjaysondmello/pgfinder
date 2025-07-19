@@ -52,7 +52,7 @@ const PgDetails = () => {
 
   const handlePayment = async (amt, pgId) => {
     try {
-      const result = await dispatch(payment({amt, pgId})).unwrap();
+      const result = await dispatch(payment({ amt, pgId })).unwrap();
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
