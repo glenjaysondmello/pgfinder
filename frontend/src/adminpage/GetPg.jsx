@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import BannerAction from "../actionfunctions/BannerAction";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+// Slices & Actions
 import {
   fetchPgs,
   deletePg,
   getPg,
   updatePg,
 } from "../features/pgslice/pgSlice";
+
+// Components & Icons
 import Loader from "../animations/Loader";
-import SidebarAction from "../actionfunctions/SidebarAction";
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import { FaEdit, FaTrash, FaTimes, FaPlusCircle } from "react-icons/fa";
 
 const GetPg = () => {
   const dispatch = useDispatch();
@@ -22,12 +27,11 @@ const GetPg = () => {
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this PG?")) return;
+    if (!window.confirm("Are you sure you want to permanently delete this PG?")) return;
     try {
       await dispatch(deletePg(id)).unwrap();
       toast.success("PG Deleted Successfully");
-
-      await dispatch(fetchPgs());
+      // The fetchPgs() will be triggered by the slice listener, no need to call again if set up that way.
     } catch (error) {
       toast.error("Failed to delete PG");
     }
@@ -38,253 +42,180 @@ const GetPg = () => {
       const pgData = await dispatch(getPg(id)).unwrap();
       setEditData({ ...pgData, imagesToDelete: [], newImages: [] });
     } catch (error) {
-      toast.error("Failed to load PG details");
+      toast.error("Failed to load PG details for editing");
     }
   };
 
   const handleUpdate = async () => {
+    if (!editData) return;
     try {
-      if (!editData) return;
-
       await dispatch(updatePg(editData)).unwrap();
       toast.success("PG updated successfully");
-
-      dispatch(fetchPgs());
-
       setEditData(null);
     } catch (error) {
-      toast.error("Failed to load PG details");
+      toast.error(error.message || "Failed to update PG details");
     }
   };
 
-  return (
-    <div className="p-6 min-h-screen">
-      <SidebarAction />
-      <BannerAction />
-      <h2 className="text-3xl font-bold text-white flex items-center justify-center mt-36 mb-12">
-        Admin PG Management
-      </h2>
+  const handleImageToggleForDelete = (image) => {
+    const isMarked = editData.imagesToDelete.includes(image);
+    const updatedImagesToDelete = isMarked
+      ? editData.imagesToDelete.filter((img) => img !== image)
+      : [...editData.imagesToDelete, image];
+    setEditData({ ...editData, imagesToDelete: updatedImagesToDelete });
+  };
 
-      {status === "loading" && (
-        <div className="flex items-center justify-center mt-60">
-          <Loader />
-        </div>
-      )}
-      {status === "failed" && <p className="text-red-500">Error</p>}
-
-      {status === "succeeded" && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pgRooms.map((pg) => (
-              <div key={pg._id} className="bg-white p-4 shadow-md rounded-lg">
-                <Link to={`/admin/getpg/${pg._id}`}>
-                  <div>
-                    <div className="grid grid-cols-3 gap-2 mb-3">
-                      {pg.images?.length > 0 ? (
-                        pg.images.map((image, index) => (
-                          <img
-                            key={index}
-                            src={image}
-                            alt={`PG ${pg.name}`}
-                            className="w-full h-20 object-cover rounded"
-                          />
-                        ))
-                      ) : (
-                        <p className="text-sm text-gray-500 col-span-3">
-                          No Images Available
-                        </p>
-                      )}
-                    </div>
-                    <h3 className="text-lg font-semibold">
-                      {pg.name} - {pg.location}
-                    </h3>
-
-                    <p className="text-sm text-gray-600">
-                      Amenities: {pg.amenities.join(", ")}
-                    </p>
-                    <p className="text-sm text-gray-600">Price: ₹{pg.price}</p>
-                    <p className="text-sm text-gray-600">
-                      Availability:{" "}
-                      {pg.availability ? "Available" : "Not Available"}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Contact: {pg.contactNumber}
-                    </p>
-                    <p className="text-sm text-gray-600">Email: {pg.email}</p>
-                    <p className="text-sm text-gray-600">
-                      Description: {pg.description}
-                    </p>
-                  </div>
-                </Link>
-
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleEdit(pg._id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(pg._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {editData && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded shadow-lg w-96">
-                <h3 className="text-xl font-semibold mb-2">Edit PG Details</h3>
-                <label className="block text-sm font-semibold">Name</label>
-                <input
-                  type="text"
-                  value={editData.name}
-                  onChange={(e) =>
-                    setEditData({ ...editData, name: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">Location</label>
-                <input
-                  type="text"
-                  value={editData.location}
-                  onChange={(e) =>
-                    setEditData({ ...editData, location: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">Amenities</label>
-                <input
-                  type="text"
-                  value={editData.amenities.join(", ")}
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      amenities: e.target.value.split(", "),
-                    })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">Price</label>
-                <input
-                  type="number"
-                  value={editData.price}
-                  onChange={(e) =>
-                    setEditData({ ...editData, price: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">
-                  Availability
-                </label>
-                <input
-                  type="text"
-                  value={editData.availability}
-                  onChange={(e) =>
-                    setEditData({ ...editData, availability: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">
-                  Contact Number
-                </label>
-                <input
-                  type="tel"
-                  value={editData.contactNumber}
-                  onChange={(e) =>
-                    setEditData({ ...editData, contactNumber: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">Email</label>
-                <input
-                  type="email"
-                  value={editData.email}
-                  onChange={(e) =>
-                    setEditData({ ...editData, email: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-                <label className="block text-sm font-semibold">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  value={editData.description}
-                  onChange={(e) =>
-                    setEditData({ ...editData, description: e.target.value })
-                  }
-                  className="w-full p-2 border rounded mb-2"
-                />
-
-                <h4 className="text-sm font-semibold">
-                  Current Images
-                  <br />
-                  (Select the Images If you want to Delete them){" "}
-                </h4>
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  {editData.images?.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={image}
-                        alt="PG"
-                        className="w-full h-20 object-cover rounded"
-                      />
-                      <input
-                        type="checkbox"
-                        className="absolute top-0 right-0 m-1"
-                        onChange={(e) => {
-                          const updatedImages = e.target.checked
-                            ? [...editData.imagesToDelete, image]
-                            : editData.imagesToDelete.filter(
-                                (img) => img !== image
-                              );
-                          setEditData({
-                            ...editData,
-                            imagesToDelete: updatedImages,
-                          });
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="w-full p-2 border rounded mb-2"
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      newImages: [...editData.newImages, ...e.target.files],
-                    })
-                  }
-                />
-
-                <div className="flex justify-between mt-2">
-                  <button
-                    onClick={handleUpdate}
-                    className="bg-green-500 text-white px-3 py-1 rounded"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => setEditData(null)}
-                    className="bg-gray-400 text-white px-3 py-1 rounded"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+  const renderPgGrid = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {pgRooms.map((pg) => (
+        // highlight-start
+        // --- Redesigned PG Card ---
+        <div key={pg._id} className="bg-gray-800 rounded-xl shadow-lg flex flex-col">
+          <img
+            src={pg.images?.[0] || 'https://via.placeholder.com/400x300.png?text=No+Image'}
+            alt={pg.name}
+            className="w-full h-48 object-cover rounded-t-xl"
+          />
+          <div className="p-4 flex flex-col flex-grow">
+            <h3 className="text-xl font-bold text-white truncate">{pg.name}</h3>
+            <p className="text-gray-400 text-sm mt-1">{pg.location}</p>
+            <div className="flex-grow mt-2">
+              <p className="text-lg text-green-400 font-semibold">₹{pg.price} / month</p>
+              <p className={`text-sm font-semibold ${pg.availability ? 'text-green-400' : 'text-red-400'}`}>
+                {pg.availability ? "Available" : "Booked"}
+              </p>
             </div>
-          )}
-        </>
-      )}
+            <div className="flex gap-3 mt-4 border-t border-gray-700 pt-3">
+              <button
+                onClick={() => handleEdit(pg._id)}
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold px-4 py-2 rounded-md transition-colors duration-200"
+              >
+                <FaEdit /> Edit
+              </button>
+              <button
+                onClick={() => handleDelete(pg._id)}
+                className="flex-1 flex items-center justify-center gap-2 bg-red-600/20 hover:bg-red-600/40 text-red-300 font-semibold px-4 py-2 rounded-md transition-colors duration-200"
+              >
+                <FaTrash /> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        // highlight-end
+      ))}
+    </div>
+  );
+  
+  const renderEditModal = () => (
+    // highlight-start
+    // --- Modern & Responsive Edit Modal ---
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800 text-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-700">
+          <h3 className="text-xl font-bold">Edit PG Details</h3>
+          <button onClick={() => setEditData(null)} className="p-2 rounded-full hover:bg-gray-700">
+            <FaTimes />
+          </button>
+        </div>
+
+        {/* Modal Body with Scrolling */}
+        <div className="p-6 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Form Fields */}
+            <div>
+              <label className="block text-sm font-medium text-gray-400">Name</label>
+              <input type="text" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400">Location</label>
+              <input type="text" value={editData.location} onChange={(e) => setEditData({ ...editData, location: e.target.value })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400">Price</label>
+              <input type="number" value={editData.price} onChange={(e) => setEditData({ ...editData, price: e.target.value })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400">Contact Number</label>
+              <input type="tel" value={editData.contactNumber} onChange={(e) => setEditData({ ...editData, contactNumber: e.target.value })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-400">Amenities (comma separated)</label>
+              <input type="text" value={editData.amenities.join(", ")} onChange={(e) => setEditData({ ...editData, amenities: e.target.value.split(",").map(a => a.trim()) })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-400">Description</label>
+              <textarea value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} rows="3" className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400">Availability</label>
+              <select value={editData.availability} onChange={(e) => setEditData({ ...editData, availability: e.target.value === 'true' })} className="mt-1 w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500">
+                <option value={true}>Available</option>
+                <option value={false}>Not Available</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Image Management */}
+          <div className="mt-6">
+            <h4 className="text-md font-semibold text-gray-300">Manage Images</h4>
+            <p className="text-sm text-gray-400 mb-2">Click on an image to mark it for deletion.</p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              {editData.images?.map((image) => (
+                <div key={image} className="relative cursor-pointer group" onClick={() => handleImageToggleForDelete(image)}>
+                  <img src={image} alt="PG" className="w-full h-24 object-cover rounded-md" />
+                  {editData.imagesToDelete.includes(image) && (
+                    <div className="absolute inset-0 bg-red-700/60 flex items-center justify-center rounded-md">
+                      <FaTrash className="text-white text-2xl"/>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-400">Add New Images</label>
+            <input type="file" multiple accept="image/*" onChange={(e) => setEditData({ ...editData, newImages: Array.from(e.target.files) })} className="mt-1 w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600/20 file:text-blue-300 hover:file:bg-blue-600/30"/>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex justify-end gap-4 p-4 border-t border-gray-700">
+          <button onClick={() => setEditData(null)} className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 font-semibold transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleUpdate} className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 font-semibold transition-colors">
+            Update PG
+          </button>
+        </div>
+      </div>
+    </div>
+    // highlight-end
+  );
+
+  return (
+    <div className="bg-gray-900 min-h-screen">
+      <Sidebar />
+      <header className="fixed top-0 left-0 w-full z-30">
+        <Navbar />
+      </header>
+
+      <main className="container mx-auto px-4 pt-28 sm:pt-32 pb-16">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">
+            Admin PG Management
+          </h1>
+          <Link to="/admin/addpg" className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-bold px-4 py-2 rounded-lg transition-all duration-200">
+            <FaPlusCircle /> Add New PG
+          </Link>
+        </div>
+        
+        {status === "loading" && <div className="flex justify-center pt-20"><Loader /></div>}
+        {status === "failed" && <div className="text-center pt-20"><p className="text-red-500">Error loading PGs.</p></div>}
+        {status === "succeeded" && renderPgGrid()}
+      </main>
+
+      {editData && renderEditModal()}
     </div>
   );
 };
