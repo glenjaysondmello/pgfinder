@@ -199,6 +199,7 @@ const pgSlice = createSlice({
       })
       .addCase(addPg.fulfilled, (state, action) => {
         state.status = "succeeded";
+        state.pgRooms.push(action.payload);
       })
       .addCase(addPg.rejected, (state) => {
         state.status = "failed";

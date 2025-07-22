@@ -80,8 +80,9 @@ const Search = () => {
               </p>
             </div>
           )}
-          {!loading && !error && (
-            results.length > 0 ? (
+          {!loading &&
+            !error &&
+            (results.length > 0 ? (
               <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {results.map((pg) => (
                   <li key={pg._id}>
@@ -91,13 +92,18 @@ const Search = () => {
                     >
                       <div className="w-full h-48 overflow-hidden">
                         <img
-                          src={pg.images?.[0] || 'https://via.placeholder.com/400x300.png?text=No+Image'}
+                          src={
+                            pg.images?.[0] ||
+                            "https://via.placeholder.com/400x300.png?text=No+Image"
+                          }
                           alt={`PG ${pg.name}`}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                       <div className="p-5">
-                        <h3 className="text-xl font-bold text-white truncate">{pg.name}</h3>
+                        <h3 className="text-xl font-bold text-white truncate">
+                          {pg.name}
+                        </h3>
                         <div className="mt-3 space-y-2 text-gray-400 text-sm">
                           <p className="flex items-center gap-2">
                             <FaMapMarkerAlt className="text-blue-400" />
@@ -109,7 +115,9 @@ const Search = () => {
                           </p>
                           <p className="flex items-start gap-2">
                             <FaThList className="text-purple-400 mt-0.5 flex-shrink-0" />
-                            <span className="line-clamp-2">{pg.amenities.join(", ")}</span>
+                            <span className="line-clamp-2">
+                              {pg.amenities.join(", ")}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -120,12 +128,15 @@ const Search = () => {
             ) : (
               debouncedQuery && (
                 <div className="text-center pt-20">
-                  <p className="text-gray-400 text-lg">No results found for "{debouncedQuery}"</p>
-                  <p className="text-gray-500 mt-2">Try searching for a different location or amenity.</p>
+                  <p className="text-gray-400 text-lg">
+                    No results found for "{debouncedQuery}"
+                  </p>
+                  <p className="text-gray-500 mt-2">
+                    Try searching for a different location or amenity.
+                  </p>
                 </div>
               )
-            )
-          )}
+            ))}
         </div>
       </main>
     </div>
@@ -134,16 +145,15 @@ const Search = () => {
 
 export default Search;
 
+// useEffect(() => {
+//   return () => {
+//     dispatch(setQuery(""));
+//     dispatch(clearResults());
+//   };
+// }, [dispatch]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(setQuery(""));
-  //     dispatch(clearResults());
-  //   };
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (query.trim()) {
-  //     dispatch(searchPgs(query));
-  //   }
-  // }, [query, dispatch]);
+// useEffect(() => {
+//   if (query.trim()) {
+//     dispatch(searchPgs(query));
+//   }
+// }, [query, dispatch]);

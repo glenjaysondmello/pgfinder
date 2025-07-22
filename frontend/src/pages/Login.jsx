@@ -1,206 +1,165 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { auth, googleProvider } from "../firebase/firebaseConfig";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { useDispatch } from "react-redux";
-import { setAuthUser, setCurrentUser } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { auth, googleProvider } from "../firebase/firebaseConfig";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { setAuthUser } from "../features/auth/authSlice";
+import { FaExclamationCircle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async ({ email, password }) => {
+    setIsLoading(true);
     try {
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(userCredentials);
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password);
       const loggedUser = userCredentials.user;
-      dispatch(setCurrentUser(loggedUser.uid));
-      const token = await loggedUser.getIdToken();
-      console.log("Token:", token);
-
-      const { data } = await axios.get(
-        `/api/userrole/getUserRole/${loggedUser.uid}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const { role } = await data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: loggedUser.uid,
-            email: loggedUser.email,
-            displayName: loggedUser.displayName || "User",
-            role,
-          },
-          token,
-        })
-      );
-      toast.success("Logged In Successfully");
-      navigate("/");
-    } catch (error) {
-      error.code === "auth/invalid-credentials"
-        ? toast.error("Incorrect Email or Password")
-        : toast.error("An error occurred. Please try again.");
-      console.log(error);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    googleProvider.setCustomParameters({
-      prompt: "select_account",
-    });
-    try {
-      const userCredentials = await signInWithPopup(auth, googleProvider);
-      const loggedUser = userCredentials.user;
-      dispatch(setCurrentUser(loggedUser.uid));
       const token = await loggedUser.getIdToken();
 
       const { data } = await axios.get(
         `/api/userrole/getUserRole/${loggedUser.uid}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log(token);
-
       const { role } = data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
 
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: loggedUser.uid,
-            email: loggedUser.email,
-            displayName: loggedUser.displayName,
-            photoURL: loggedUser.photoURL,
-            role,
-          },
-          token,
-        })
-      );
-      toast.success("Signed In With Google");
+      dispatch(setAuthUser({
+        user: {
+          uid: loggedUser.uid,
+          email: loggedUser.email,
+          displayName: loggedUser.displayName,
+          photoURL: loggedUser.photoURL,
+          role,
+        },
+        token,
+      }));
+
+      toast.success("Logged In Successfully!");
       navigate("/");
+
+    } catch (error) {
+      if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+        toast.error("Incorrect email or password.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+      console.error("Login Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+    try {
+      const userCredentials = await signInWithPopup(auth, googleProvider);
+      const loggedUser = userCredentials.user;
+      const token = await loggedUser.getIdToken();
+
+      const { data } = await axios.get(
+        `/api/userrole/getUserRole/${loggedUser.uid}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const { role } = data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      dispatch(setAuthUser({
+        user: {
+          uid: loggedUser.uid,
+          email: loggedUser.email,
+          displayName: loggedUser.displayName,
+          photoURL: loggedUser.photoURL,
+          role,
+        },
+        token,
+      }));
+      
+      toast.success("Signed In With Google!");
+      navigate("/");
+
     } catch (error) {
       toast.error(error.message || "Google Sign-In Failed");
+      console.error("Google Login Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const inp_box_style =
-    "w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 transition duration-200";
+  const input_style = "w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200";
+  const error_style = "flex items-center gap-1 text-red-400 text-sm mt-1";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 to-purple-900 flex items-center justify-center p-4">
-      <div
-        className="absolute top-4 left-4 flex items-center gap-4 cursor-pointer"
-        onClick={() => navigate("/")}
-      >
-        <div className="w-10 h-10 rounded-full overflow-hidden animate-pulse">
-          <img
-            src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180"
-            alt="logo"
-            className="w-full h-full object-cover"
-          />
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800/50 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-gray-700">
+        
+        <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-3 mb-2">
+                 <img
+                    src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180"
+                    alt="logo"
+                    className="w-12 h-12 rounded-full object-cover"
+                />
+                <h1 className="text-3xl text-white font-bold">PG-Finder</h1>
+            </Link>
+          <h2 className="text-2xl font-bold text-white">Welcome Back!</h2>
+          <p className="text-gray-400">Sign in to continue.</p>
         </div>
-        <h1 className="text-2xl text-gray-300 font-medium animate-glow">
-          PG-Finder
-        </h1>
-      </div>
-      <div className="dark-animated-container">
-        <h2 className="text-3xl font-bold text-white text-center mb-8">
-          Welcome Back
-        </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-2">
-            <label className="block text-white text-sm font-medium">
-              Email
-            </label>
-            <input
-              type="email"
-              className={inp_box_style}
-              placeholder="Enter your email"
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <input type="email" placeholder="Email Address" className={input_style}
               {...register("email", {
                 required: "Email is required",
-                pattern: {
-                  value: /\S+@\S+\.\S+/,
-                  message: "Invalid email format",
-                },
+                pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email format" },
               })}
             />
-            {errors.email && (
-              <span className="text-red-400 text-sm">
-                {errors.email.message}
-              </span>
-            )}
+            {errors.email && <span className={error_style}><FaExclamationCircle/>{errors.email.message}</span>}
           </div>
-
-          <div className="space-y-2">
-            <label className="block text-white text-sm font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              className={inp_box_style}
-              placeholder="Enter your password"
-              {...register("password", {
-                required: "Password is required",
-              })}
+          <div>
+            <input type="password" placeholder="Password" className={input_style}
+              {...register("password", { required: "Password is required" })}
             />
-            {errors.password && (
-              <span className="text-red-400 text-sm">
-                {errors.password.message}
-              </span>
-            )}
+            {errors.password && <span className={error_style}><FaExclamationCircle/>{errors.password.message}</span>}
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30 transform hover:scale-[1.02] transition-all duration-200"
+          <button type="submit" disabled={isLoading}
+            className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
-
-          <p className="text-center text-white/80 mt-4">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-purple-400 hover:text-purple-300 font-medium transition duration-200"
-            >
-              Sign Up
-            </Link>
-          </p>
         </form>
-        <div>
-          <button
-            onClick={handleGoogleSignIn}
-            className="w-full mt-4 py-3 px-4 bg-white text-gray-800 font-medium flex items-center justify-center gap-2 rounded-lg shadow-lg shadow-gray-300 hover:shadow-md hover:shadow-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 transform hover:scale-[1.02] transition-all duration-200"
-          >
-            <img src="../../google.png" alt="Google Logo" className="w-5 h-5" />
-            <span>Sign In with Google</span>
-          </button>
+
+        <div className="relative flex py-5 items-center">
+            <div className="flex-grow border-t border-gray-600"></div>
+            <span className="flex-shrink mx-4 text-gray-400">OR</span>
+            <div className="flex-grow border-t border-gray-600"></div>
         </div>
+
+        <button onClick={handleGoogleSignIn} disabled={isLoading}
+          className="w-full py-3 px-4 bg-gray-700 text-white font-medium flex items-center justify-center gap-3 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50 transition-all duration-200 disabled:opacity-50"
+        >
+          <FcGoogle size={24} />
+          <span>Sign In with Google</span>
+        </button>
+        
+        <p className="text-center text-gray-400 mt-6">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition duration-200">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );

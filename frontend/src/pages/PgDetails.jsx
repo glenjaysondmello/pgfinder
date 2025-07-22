@@ -150,7 +150,6 @@ const PgDetails = () => {
 
           <div className="lg:col-span-2 mt-8 lg:mt-0">
             <div className="space-y-6">
-              {/* Name & Location */}
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold">
                   {selectedPg.name}
@@ -159,7 +158,6 @@ const PgDetails = () => {
                   <FaMapMarkerAlt /> {selectedPg.location}
                 </p>
               </div>
-
               <div className="grid grid-cols-2 gap-4 bg-gray-800 p-4 rounded-lg">
                 <div className="flex items-center gap-3">
                   <FaRupeeSign className="text-green-400 text-xl" />
@@ -187,29 +185,30 @@ const PgDetails = () => {
                     </p>
                   </div>
                 </div>
+
                 <div className="flex items-center gap-3">
-                  <FaPhoneAlt className="text-blue-400 text-lg" />
-                  <div>
+                  <FaPhoneAlt className="text-blue-400 text-lg flex-shrink-0" />
+                  <div className="min-w-0">
                     <p className="text-sm text-gray-400">Contact</p>
-                    <p className="font-semibold">{selectedPg.contactNumber}</p>
+                    <p className="font-semibold truncate">
+                      {selectedPg.contactNumber}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <FaEnvelope className="text-blue-400 text-lg" />
-                  <div>
+                  <FaEnvelope className="text-blue-400 text-lg flex-shrink-0" />
+                  <div className="min-w-0">
                     <p className="text-sm text-gray-400">Email</p>
                     <p className="font-semibold truncate">{selectedPg.email}</p>
                   </div>
                 </div>
               </div>
-
               <div>
                 <h3 className="text-xl font-semibold mb-2">About this PG</h3>
                 <p className="text-gray-300 leading-relaxed">
                   {selectedPg.description}
                 </p>
               </div>
-
               <div>
                 <h3 className="text-xl font-semibold mb-3">Amenities</h3>
                 <div className="flex flex-wrap gap-2">
@@ -223,7 +222,6 @@ const PgDetails = () => {
                   ))}
                 </div>
               </div>
-
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => handleAddCart(selectedPg._id)}

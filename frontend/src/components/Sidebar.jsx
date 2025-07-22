@@ -18,11 +18,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { open } = useSelector((store) => store.sidebar);
-  // highlight-start
-  // Get user state to conditionally render auth buttons
   const { user, role } = useSelector((store) => store.auth);
   const token = localStorage.getItem("token");
-  // highlight-end
   const [visibleItems, setVisibleItems] = useState([]);
 
   const allItems = [
@@ -43,8 +40,6 @@ const Sidebar = () => {
     dispatch(setCloseBar());
   };
   
-  // highlight-start
-  // Logout logic, now inside the Sidebar
   const logOut = () => {
     signOut(auth)
       .then(() => {
@@ -57,7 +52,6 @@ const Sidebar = () => {
         toast.error(error.message);
       });
   };
-  // highlight-end
 
   return (
     <div
@@ -88,8 +82,6 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        {/* highlight-start */}
-        {/* NEW: User & Auth Section */}
         <div className="p-4 border-t border-gray-700">
           {user && token ? (
             <div className="space-y-4">
@@ -127,7 +119,6 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-        {/* highlight-end */}
       </div>
     </div>
   );

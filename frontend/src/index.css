@@ -1,3 +1,6 @@
+/* ==========================================================================
+   1. IMPORTS & TAILWIND DIRECTIVES
+   ========================================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
@@ -5,34 +8,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  background-image: linear-gradient(to right, #27272a, #1e3a8a);
-  animation: gradient 10s ease infinite;
-  background-size: 200% 200%;
-  overscroll-behavior: none;
-}
 
-@keyframes gradient {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.absolute {
-  position: absolute;
-}
-.inset-0 {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
+/* ==========================================================================
+   2. BASE LAYER - Base styles for HTML elements
+   ========================================================================== */
 @layer base {
   html {
     font-family: "Poppins", sans-serif;
@@ -41,299 +20,173 @@ body {
 
   body {
     @apply antialiased;
+    /* Animated Gradient Background */
+    background-image: linear-gradient(to right, #27272a, #183078);
+    background-size: 200% 200%;
+    animation: gradient 10s ease infinite;
+    overscroll-behavior: none;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: "Space Grotesk", sans-serif;
-    @apply font-semibold tracking-tight text-gray-800;
+    @apply font-semibold tracking-tight text-gray-200; /* Adjusted for dark theme */
   }
 
-  /* Simplified heading sizes */
-  h1 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
-  }
+  h1 { @apply text-3xl md:text-4xl lg:text-5xl; }
+  h2 { @apply text-2xl md:text-3xl; }
 
-  h2 {
-    @apply text-2xl md:text-3xl;
-  }
-
-  /* Clean focus styles */
+  /* Accessible Focus Styles */
   *:focus-visible {
-    @apply outline-none ring-2 ring-gray-300 ring-offset-2;
+    @apply outline-none ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-900;
   }
 
-  /* Simplified scrollbar */
+  /* Custom Scrollbar for Dark Theme */
   ::-webkit-scrollbar {
     width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    @apply bg-gray-800;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
+    @apply bg-gray-600 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+    @apply bg-gray-500;
   }
 
-  /* Simple selection color */
+  /* Custom Selection Color */
   ::selection {
-    @apply bg-gray-200 text-gray-800;
+    @apply bg-blue-500/30 text-white;
   }
 }
 
-/* Simplified utilities */
+
+/* ==========================================================================
+   3. COMPONENTS LAYER - Complex, multi-part custom classes
+   ========================================================================== */
+@layer components {
+  /*
+   * A complex container with multiple animated effects:
+   * - Glassmorphism background (backdrop-blur)
+   * - Animated neon border
+   * - Animated shimmer overlay
+   * - Inner glow effect
+   * - Enhanced hover states
+  */
+  .dark-animated-container {
+    @apply bg-gray-900/50 backdrop-blur-lg p-8 w-full max-w-md relative rounded-xl;
+    background-clip: padding-box;
+    border: solid 2px transparent;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 2px 15px rgba(124, 58, 237, 0.15), inset 0 -1px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+
+    /* Animated Neon Border (Pseudo-element) */
+    &::after {
+      content: "";
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(240deg, #2e1065, #4c1d95, #5b21b6, #2e1065);
+      background-size: 400% 400%;
+      animation: borderAnimation 8s ease infinite;
+      border-radius: 0.875rem; /* Slightly larger than parent's radius */
+      z-index: -1;
+      filter: blur(1px);
+    }
+
+    /* Animated Shimmer Overlay (Pseudo-element) */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 0.75rem;
+      background: linear-gradient(120deg, transparent, rgba(167, 139, 250, 0.04), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 4s linear infinite;
+      pointer-events: none;
+    }
+
+    &:hover {
+      box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(124, 58, 237, 0.4), inset 0 2px 15px rgba(124, 58, 237, 0.2), inset 0 -1px 15px rgba(0, 0, 0, 0.6);
+      transform: translateY(-2px);
+    }
+    
+    &:hover::after {
+      animation-duration: 4s;
+      filter: blur(2px);
+    }
+  }
+}
+
+
+/* ==========================================================================
+   4. UTILITIES LAYER - Simple, single-purpose helper classes
+   ========================================================================== */
 @layer utilities {
   .bg-glass {
     @apply bg-white/80 backdrop-blur-sm;
   }
+
+  /* Custom Animation Utilities (if not using tailwind.config.js) */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 15s ease infinite;
+  }
+  .animate-fade-in { animation: fadeIn 1s ease-out; }
+  .animate-slide-in-left { animation: slideInLeft 0.8s ease-out; }
+  .animate-slide-in-right { animation: slideInRight 0.8s ease-out; }
+  .animate-slide-in-top { animation: slideInTop 0.8s ease-out; }
+  .animate-glow-text { animation: glowText 2s ease-in-out infinite; }
+  .animate-float { animation: float 3s ease-in-out infinite; }
 }
 
-/* Custom animations */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+/* ==========================================================================
+   5. KEYFRAMES - All animation definitions
+   ========================================================================== */
+@keyframes gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 @keyframes borderAnimation {
-  0% {
-    background-position: 0% 50%;
-    box-shadow: 0 0 15px rgba(88, 28, 135, 0.5),
-      0 0 30px rgba(124, 58, 237, 0.3), 0 0 45px rgba(167, 139, 250, 0.2);
-  }
-  50% {
-    background-position: 100% 50%;
-    box-shadow: 0 0 20px rgba(88, 28, 135, 0.6),
-      0 0 40px rgba(124, 58, 237, 0.4), 0 0 60px rgba(167, 139, 250, 0.3);
-  }
-  100% {
-    background-position: 0% 50%;
-    box-shadow: 0 0 15px rgba(88, 28, 135, 0.5),
-      0 0 30px rgba(124, 58, 237, 0.3), 0 0 45px rgba(167, 139, 250, 0.2);
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-.dark-animated-container {
-  @apply bg-slate-950/50 backdrop-blur-lg p-8 w-full max-w-md relative;
-  background-clip: padding-box;
-  border-radius: 0.75rem;
-  border: solid 2px transparent;
-
-  /* Dark mode shadow */
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5),
-    inset 0 2px 15px rgba(88, 28, 135, 0.15),
-    inset 0 -1px 15px rgba(0, 0, 0, 0.5);
-
-  /* Shimmer effect */
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 0.75rem;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(167, 139, 250, 0.03),
-      transparent
-    );
-    background-size: 200% 100%;
-    animation: shimmer 4s linear infinite;
-    pointer-events: none;
-  }
-
-  /* Neon border effect */
-  &::after {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(
-      240deg,
-      #2e1065,
-      /* Darker purple */ #4c1d95,
-      /* Deep purple */ #5b21b6,
-      /* Vivid purple */ #2e1065 /* Back to darker purple */
-    );
-    background-size: 400% 400%;
-    animation: borderAnimation 8s ease infinite;
-    border-radius: 0.75rem;
-    z-index: -1;
-    filter: blur(1px);
-  }
-
-  /* Enhanced hover effects */
-  &:hover::after {
-    animation-duration: 4s;
-    filter: blur(1.5px);
-  }
-
-  &:hover {
-    box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 28, 135, 0.4),
-      inset 0 2px 15px rgba(88, 28, 135, 0.2),
-      inset 0 -1px 15px rgba(0, 0, 0, 0.6);
-    transform: translateY(-1px);
-    transition: all 0.3s ease;
-  }
-
-  /* Inner glow for depth */
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 50% 0%,
-      rgba(167, 139, 250, 0.05),
-      transparent 50%
-    );
-    border-radius: 0.75rem;
-    pointer-events: none;
-  }
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideFromLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideFromRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideFromTop {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes glow {
-  0%,
-  100% {
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 15s ease infinite;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 1s ease-out;
-}
-
-.animate-slideFromLeft {
-  animation: slideFromLeft 0.8s ease-out;
-}
-
-.animate-slideFromRight {
-  animation: slideFromRight 0.8s ease-out;
-}
-
-.animate-slideFromTop {
-  animation: slideFromTop 0.8s ease-out;
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes slideOutLeft {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-.animate-slideInLeft {
-  animation: slideInLeft 0.3s forwards;
+@keyframes slideInTop {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-.animate-slideOutLeft {
-  animation: slideOutLeft 0.3s forwards;
+@keyframes glowText {
+  0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); }
+  50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
 }
