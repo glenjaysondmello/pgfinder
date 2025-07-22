@@ -31,9 +31,9 @@ export const addPg = createAsyncThunk(
         if (key === "images") {
           pgData.images.forEach((image) => formData.append("images", image));
         } else if (key === "amenities") {
-          pgData.amenities
-            .split(",")
-            .forEach((a) => formData.append("amenities", a.trim()));
+          pgData.amenities.forEach((a) =>
+            formData.append("amenities", a.trim())
+          );
         } else {
           formData.append(key, pgData[key]);
         }
@@ -179,7 +179,11 @@ const pgSlice = createSlice({
   reducers: {
     clearCart: (state) => {
       state.cart = [];
-    }
+    },
+    clearStatus: (state) => {
+      state.status = "idle";
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -263,11 +267,13 @@ const pgSlice = createSlice({
         }
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.cart = state.cart.filter((item) => item._id !== action.payload);
+        state.cart.items = state.cart.items.filter(
+          (item) => item.pgId._id !== action.payload
+        );
       });
   },
 });
 
-export const {clearCart} = pgSlice.actions;
+export const { clearCart, clearStatus } = pgSlice.actions;
 
 export default pgSlice.reducer;

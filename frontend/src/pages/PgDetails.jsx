@@ -67,7 +67,7 @@ const PgDetails = () => {
                 razorpay_order_id: res.razorpay_order_id,
                 razorpay_payment_id: res.razorpay_payment_id,
                 razorpay_signature: res.razorpay_signature,
-                amount: result.amount, // Send original amount
+                amount: result.amount / 100,
               })
             ).unwrap();
             toast.success("Payment Successful!");

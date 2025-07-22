@@ -17,14 +17,15 @@ import {
 const Cart = () => {
   const dispatch = useDispatch();
   const { cart, status } = useSelector((store) => store.pg);
+  const loading = status === "loading";
 
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  const handleRemoveCart = (pgRoomId) => {
+  const handleRemoveCart = async (pgRoomId) => {
     try {
-      dispatch(removeFromCart(pgRoomId));
+      await dispatch(removeFromCart(pgRoomId)).unwrap();
       toast.success("Removed from your list");
     } catch (error) {
       toast.error("Failed to remove item");
@@ -138,7 +139,13 @@ const Cart = () => {
         <h1 className="text-3xl md:text-4xl font-bold mb-8">
           Your Shortlisted PGs
         </h1>
-        {renderContent()}
+        {loading ? (
+          <div className="flex justify-center items-center pt-20">
+            <Loader />
+          </div>
+        ) : (
+          renderContent()
+        )}
       </main>
     </div>
   );

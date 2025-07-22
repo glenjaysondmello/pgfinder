@@ -21,9 +21,10 @@
   body {
     @apply antialiased;
     /* Animated Gradient Background */
-    background-image: linear-gradient(to right, #27272a, #183078);
+    /* background-image: linear-gradient(to right, #27272a, #183078);
     background-size: 200% 200%;
-    animation: gradient 10s ease infinite;
+    animation: gradient 10s ease infinite; */
+    background-color: #111827; /* Dark background for dark theme */
     overscroll-behavior: none;
   }
 
