@@ -5,6 +5,7 @@ import sidebarReducer from "../features/sidebar/sidebarSlice";
 import pgReducer from "../features/pgslice/pgSlice";
 import searchPgReducer from "../features/search/searchPgSlice";
 import paymentReducer from "../features/payment/paymentSlice";
+import commentReducer from "../features/comments/commentSlice";
 import {
   persistReducer,
   FLUSH,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   pg: pgReducer,
   search: searchPgReducer,
   pay: paymentReducer,
+  comments: commentReducer,
 });
 
 const persistConfig = {

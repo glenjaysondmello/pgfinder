@@ -27,16 +27,13 @@ const Signup = () => {
       const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
       const registeredUser = userCredentials.user;
 
-      // Send verification email
       await sendEmailVerification(registeredUser);
       toast.success("Verification email sent! Please check your inbox.");
 
-      // Update user profile with name
       await updateProfile(registeredUser, { displayName: name });
       
       const token = await registeredUser.getIdToken();
       
-      // Fetch user role from backend
       const { data } = await axios.get(
         `/api/userrole/getUserRole/${registeredUser.uid}`,
         { headers: { Authorization: `Bearer ${token}` } }
