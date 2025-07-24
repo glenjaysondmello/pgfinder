@@ -7,6 +7,7 @@ import { payment, verify } from "../features/payment/paymentSlice";
 import Loader from "../animations/Loader";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
+import CommentSection from "../components/CommentSection";
 import {
   FaMapMarkerAlt,
   FaPhoneAlt,
@@ -241,6 +242,9 @@ const PgDetails = () => {
             </div>
           </div>
         </div>
+        <section className="max-w-4xl mx-auto px-4 mt-10">
+          <CommentSection pgId={selectedPg._id} />
+        </section>
       </main>
     </div>
   );

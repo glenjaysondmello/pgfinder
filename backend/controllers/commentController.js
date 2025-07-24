@@ -18,13 +18,16 @@ const getComments = async (req, res) => {
   }
 };
 
-const postComments = async (req, res) => {
-  const { username, text } = req.body;
+const postComment = async (req, res) => {
+  const userId = req.user.uid;
+  const username = req.user.name;
+  const { text } = req.body;
   const pgId = req.params.pgId;
 
   try {
     const newComment = await Comment.create({
       pgId,
+      userId,
       username,
       text,
     });
@@ -38,7 +41,9 @@ const postComments = async (req, res) => {
 };
 
 const replyToComment = async (req, res) => {
-  const { username, text } = req.body;
+  const userId = req.user.uid;
+  const username = req.user.name;
+  const { text } = req.body;
   const commentId = req.params.commentId;
 
   try {
@@ -46,7 +51,7 @@ const replyToComment = async (req, res) => {
 
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    comment.replies.push({ username, text });
+    comment.replies.push({ userId, username, text });
     const updated = await comment.save();
 
     broadcast("reply-added", updated);
@@ -57,62 +62,100 @@ const replyToComment = async (req, res) => {
 };
 
 const likeComment = async (req, res) => {
+  const userId = req.user.uid;
   const commentId = req.params.commentId;
 
   try {
-    const comment = await Comment.findByIdAndUpdate(
-      commentId,
-      { $inc: { likes: 1 } },
-      { new: true }
-    );
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    broadcast("like-update", comment);
-    res.status(200).json(comment);
+    if (comment.likedBy.includes(userId))
+      return res.status(400).json({ message: "You already liked" });
+
+    const alreadyDisliked = comment.dislikedBy.includes(userId);
+
+    if (alreadyDisliked) {
+      comment.dislikes -= 1;
+      comment.dislikedBy = comment.dislikedBy.filter((id) => id !== userId);
+    }
+
+    comment.likes += 1;
+    comment.likedBy.push(userId);
+
+    const updated = await comment.save();
+
+    broadcast("like-update", updated);
+    res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ message: "Failed to like comment" });
   }
 };
 
 const dislikeComment = async (req, res) => {
+  const userId = req.user.uid;
   const commentId = req.params.commentId;
 
   try {
-    const comment = await Comment.findByIdAndUpdate(
-      commentId,
-      { $inc: { dislikes: 1 } },
-      { new: true }
-    );
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    broadcast("dislike-update", comment);
-    res.status(200).json(comment);
+    if (comment.dislikedBy.includes(userId))
+      return res.status(400).json({ message: "You already disliked" });
+
+    const alreadyliked = comment.likedBy.includes(userId);
+
+    if (alreadyliked) {
+      comment.likes -= 1;
+      comment.likedBy = comment.likedBy.filter((id) => id !== userId);
+    }
+
+    comment.dislikes += 1;
+    comment.dislikedBy.push(userId);
+
+    const updated = await comment.save();
+
+    broadcast("dislike-update", updated);
+    res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ message: "Failed to dislike comment" });
   }
 };
 
 const editComment = async (req, res) => {
+  const userId = req.user.uid;
   const { text } = req.body;
   const commentId = req.params.commentId;
 
   try {
-    const comment = await Comment.findByIdAndUpdate(
-      commentId,
-      { text },
-      { new: true }
-    );
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    broadcast("edit-comment", comment);
-    res.status(200).json(comment);
+    if (comment.userId !== userId)
+      return res.status(403).json({ message: "Unauthorized" });
+
+    comment.text = text;
+    const updated = await comment.save();
+
+    broadcast("edit-comment", updated);
+    res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ message: "Failed to edit comment" });
   }
 };
 
 const deleteComment = async (req, res) => {
+  const userId = req.user.uid;
   const commentId = req.params.commentId;
 
   try {
-    await Comment.findByIdAndDelete(commentId);
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    if (comment.userId !== userId)
+      return res.status(403).json({ message: "Unauthorized" });
+
+    await comment.deleteOne();
+
     broadcast("delete-comment", commentId);
     res.status(200).json({ message: "Deleted successfully" });
   } catch (err) {
@@ -123,7 +166,7 @@ const deleteComment = async (req, res) => {
 module.exports = {
   initSocket,
   getComments,
-  postComments,
+  postComment,
   replyToComment,
   likeComment,
   dislikeComment,
