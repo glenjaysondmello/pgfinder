@@ -16,14 +16,11 @@ import {
 import Comment from "./Comment";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
-
-// Icons and consistent components
 import { FaPaperPlane } from "react-icons/fa";
 import Avatar from "react-avatar";
 
 const socket = io("http://localhost:5000");
 
-// A skeleton loader for better UX, defined locally
 const CommentSkeleton = () => (
   <div className="flex gap-3 my-6 animate-pulse">
     <div className="w-10 h-10 bg-gray-700 rounded-full flex-shrink-0"></div>
@@ -40,7 +37,6 @@ const CommentSection = ({ pgId }) => {
   const { user } = useSelector((store) => store.auth); // Get current user for avatar
   const [newComment, setNewComment] = useState("");
 
-  // This logic block remains unchanged, as requested.
   useEffect(() => {
     dispatch(fetchComments(pgId));
   }, [dispatch, pgId]);
@@ -77,12 +73,9 @@ const CommentSection = ({ pgId }) => {
   };
 
   return (
-    // highlight-start
-    // --- Refactored Container and Styling ---
     <div className="bg-gray-800 rounded-2xl p-6 mt-8 text-white shadow-xl">
       <h2 className="text-2xl font-bold mb-6">Discussion & Reviews</h2>
 
-      {/* --- Refactored Add Comment Form --- */}
       {user && (
         <div className="flex gap-4 mb-8">
           <Avatar
@@ -111,7 +104,6 @@ const CommentSection = ({ pgId }) => {
         </div>
       )}
 
-      {/* --- Refactored Loading and Error States --- */}
       {status === "loading" && (
         <>
           <CommentSkeleton />
@@ -122,18 +114,15 @@ const CommentSection = ({ pgId }) => {
         <p className="text-red-400 bg-red-500/10 p-3 rounded-md">{error}</p>
       )}
 
-      {/* --- Refactored Comments List --- */}
       <div className="space-y-6">
         {status === "succeeded" &&
           comments.map((c, index) => (
-            // Added a wrapper with a top border for separation
             <div
               key={c._id}
               className={index > 0 ? "border-t border-gray-700 pt-6" : ""}
             >
               <Comment
                 comment={c}
-                // Props remain exactly the same as in your original code
                 onLike={() => dispatch(likeComment(c._id))}
                 onDislike={() => dispatch(dislikeComment(c._id))}
                 onReply={(id, text) =>
@@ -165,7 +154,6 @@ const CommentSection = ({ pgId }) => {
         )}
       </div>
     </div>
-    // highlight-end
   );
 };
 

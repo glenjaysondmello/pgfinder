@@ -68,7 +68,7 @@ const PgDetails = () => {
                 razorpay_order_id: res.razorpay_order_id,
                 razorpay_payment_id: res.razorpay_payment_id,
                 razorpay_signature: res.razorpay_signature,
-                amount: result.amount, // Send original amount
+                amount: result.amount / 100,
               })
             ).unwrap();
             toast.success("Payment Successful!");
@@ -186,8 +186,6 @@ const PgDetails = () => {
                     </p>
                   </div>
                 </div>
-                {/* highlight-start */}
-                {/* --- Corrected Layout for Contact & Email --- */}
                 <div className="flex items-start gap-3">
                   <FaPhoneAlt className="text-blue-400 text-lg flex-shrink-0 mt-1" />
                   <div>
@@ -201,10 +199,11 @@ const PgDetails = () => {
                   <FaEnvelope className="text-blue-400 text-lg flex-shrink-0 mt-1" />
                   <div>
                     <p className="text-sm text-gray-400">Email</p>
-                    <p className="font-semibold break-all">{selectedPg.email}</p>
+                    <p className="font-semibold break-all">
+                      {selectedPg.email}
+                    </p>
                   </div>
                 </div>
-                {/* highlight-end */}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">About this PG</h3>

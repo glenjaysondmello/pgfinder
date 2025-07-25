@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-
-// Components & Icons
 import {
   FaThumbsUp,
   FaThumbsDown,
@@ -27,7 +25,6 @@ const Comment = ({
   onEditReply,
   onDeleteReply,
 }) => {
-  // Your original logic and state management are preserved
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -61,9 +58,7 @@ const Comment = ({
   };
 
   return (
-    // --- Refactored Comment Structure ---
     <div className="flex gap-3">
-      {/* highlight-start */}
       <Avatar
         src={comment.photoURL}
         name={comment.username}
@@ -71,9 +66,7 @@ const Comment = ({
         round={true}
         className="flex-shrink-0"
       />
-      {/* highlight-end */}
       <div className="flex-1">
-        {/* --- Comment Bubble --- */}
         <div className="bg-gray-700/50 p-3 rounded-xl">
           <div className="flex items-center justify-between">
             <span className="font-bold text-white">{comment.username}</span>
@@ -87,7 +80,6 @@ const Comment = ({
               {comment.text}
             </p>
           ) : (
-            // --- Refactored Edit Form ---
             <div className="mt-2 space-y-2">
               <textarea
                 value={editedText}
@@ -113,7 +105,6 @@ const Comment = ({
           )}
         </div>
 
-        {/* --- Refactored Action Bar --- */}
         {!editMode && (
           <div className="flex gap-4 mt-2 text-gray-400 text-xs items-center flex-wrap">
             <button
@@ -153,7 +144,6 @@ const Comment = ({
           </div>
         )}
 
-        {/* --- Refactored Reply Input --- */}
         {showReplyInput && (
           <div className="mt-3 flex gap-3">
             <Avatar
@@ -189,7 +179,6 @@ const Comment = ({
           </div>
         )}
 
-        {/* --- Refactored Replies Section --- */}
         {comment.replies && comment.replies.length > 0 && (
           <div className="mt-4 space-y-4 border-l-2 border-gray-700 pl-4">
             {comment.replies.map((reply) => (
@@ -201,7 +190,6 @@ const Comment = ({
                   size="32"
                   round={true}
                 />
-                {/* highlight-end */}
                 <div className="flex-1">
                   <div className="bg-gray-700/50 p-3 rounded-xl">
                     <div className="flex items-center justify-between">
