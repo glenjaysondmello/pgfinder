@@ -134,6 +134,80 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
+//reply
+
+export const likeReply = createAsyncThunk(
+  "comments/likeReply",
+  async ({ commentId, replyId }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.patch(
+        `${API_URL}/${commentId}/reply/${replyId}/like`,
+        {},
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error liking comment");
+    }
+  }
+);
+
+export const dislikeReply = createAsyncThunk(
+  "comments/dislikeReply",
+  async ({ commentId, replyId }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.patch(
+        `${API_URL}/${commentId}/reply/${replyId}/dislike`,
+        {},
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error disliking comment");
+    }
+  }
+);
+
+export const editReply = createAsyncThunk(
+  "comments/editReply",
+  async ({ commentId, replyId, text }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.patch(
+        `${API_URL}/${commentId}/reply/${replyId}/edit`,
+        { text },
+        {
+          headers: getAuthHeaders(),
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error editing comment");
+    }
+  }
+);
+
+export const deleteReply = createAsyncThunk(
+  "comments/deleteReply",
+  async ({ commentId, replyId }, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${API_URL}/${commentId}/reply/${replyId}`, {
+        headers: getAuthHeaders(),
+        withCredentials: true,
+      });
+      return { commentId, replyId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error deleting comment");
+    }
+  }
+);
+
 const commentSlice = createSlice({
   name: "comments",
   initialState: {
@@ -184,8 +258,41 @@ const commentSlice = createSlice({
       })
       .addCase(deleteComment.fulfilled, (state, action) => {
         state.comments = state.comments.filter((c) => c._id !== action.payload);
+      })
+      .addCase(likeReply.fulfilled, (state, action) => {
+        const commentIndex = state.comments.findIndex(
+          (c) => c._id === action.payload._id
+        );
+        if (commentIndex !== -1) state.comments[commentIndex] = action.payload;
+      })
+      .addCase(dislikeReply.fulfilled, (state, action) => {
+        const commentIndex = state.comments.findIndex(
+          (c) => c._id === action.payload._id
+        );
+        if (commentIndex !== -1) state.comments[commentIndex] = action.payload;
+      })
+      .addCase(editReply.fulfilled, (state, action) => {
+        const commentIndex = state.comments.findIndex(
+          (c) => c._id === action.payload._id
+        );
+        if (commentIndex !== -1) state.comments[commentIndex] = action.payload;
+      })
+      .addCase(deleteReply.fulfilled, (state, action) => {
+        const { commentId, replyId } = action.payload;
+        const comment = state.comments.find((c) => c._id === commentId);
+        if (comment) {
+          comment.replies = comment.replies.filter((r) => r._id !== replyId);
+        }
       });
   },
 });
 
 export default commentSlice.reducer;
+
+// .addCase(deleteReply.fulfilled, (state, action) => {
+//   const { commentId, replyId } = action.payload;
+//   const comment = state.comments.find((c) => c._id === commentId);
+//   if (comment) {
+//     comment.replies = comment.replies.filter((r) => r._id !== replyId);
+//   }
+// });

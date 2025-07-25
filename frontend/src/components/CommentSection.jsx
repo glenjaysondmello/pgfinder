@@ -8,6 +8,10 @@ import {
   dislikeComment,
   editComment,
   deleteComment,
+  likeReply,
+  dislikeReply,
+  editReply,
+  deleteReply,
 } from "../features/comments/commentSlice";
 import Comment from "./Comment";
 import { io } from "socket.io-client";
@@ -33,6 +37,10 @@ const CommentSection = ({ pgId }) => {
     socket.on("dislike-update", handleUpdate);
     socket.on("edit-comment", handleUpdate);
     socket.on("delete-comment", handleUpdate);
+    socket.on("like-reply", handleUpdate);
+    socket.on("dislike-reply", handleUpdate);
+    socket.on("edit-reply", handleUpdate);
+    socket.on("delete-reply", handleUpdate);
 
     return () => {
       socket.off("new-comment", handleUpdate);
@@ -41,6 +49,10 @@ const CommentSection = ({ pgId }) => {
       socket.off("dislike-update", handleUpdate);
       socket.off("edit-comment", handleUpdate);
       socket.off("delete-comment", handleUpdate);
+      socket.off("like-reply", handleUpdate);
+      socket.off("dislike-reply", handleUpdate);
+      socket.off("edit-reply", handleUpdate);
+      socket.off("delete-reply", handleUpdate);
       socket.disconnect();
     };
   }, [dispatch, pgId]);
@@ -88,6 +100,18 @@ const CommentSection = ({ pgId }) => {
           }
           onEdit={(id, text) => dispatch(editComment({ commentId: id, text }))}
           onDelete={(id) => dispatch(deleteComment(id))}
+          onLikeReply={(replyId) =>
+            dispatch(likeReply({ commentId: c._id, replyId }))
+          }
+          onDislikeReply={(replyId) =>
+            dispatch(dislikeReply({ commentId: c._id, replyId }))
+          }
+          onEditReply={(replyId, text) =>
+            dispatch(editReply({ commentId: c._id, replyId, text }))
+          }
+          onDeleteReply={(replyId) =>
+            dispatch(deleteReply({ commentId: c._id, replyId }))
+          }
         />
       ))}
     </div>

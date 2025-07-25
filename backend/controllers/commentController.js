@@ -163,6 +163,125 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const likeReply = async (req, res) => {
+  const userId = req.user.uid;
+  const { commentId, replyId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+    if (reply.likedBy.includes(userId))
+      return res.status(400).json({ message: "You already liked" });
+
+    const alreadyDisliked = reply.dislikedBy.includes(userId);
+
+    if (alreadyDisliked) {
+      reply.dislikes -= 1;
+      reply.dislikedBy = reply.dislikedBy.filter((id) => id !== userId);
+    }
+
+    reply.likes += 1;
+    reply.likedBy.push(userId);
+
+    const updated = await comment.save();
+
+    broadcast("like-reply", updated);
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to like comment" });
+  }
+};
+
+const dislikeReply = async (req, res) => {
+  const userId = req.user.uid;
+  const { commentId, replyId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+    if (reply.dislikedBy.includes(userId))
+      return res.status(400).json({ message: "You already disliked" });
+
+    const alreadyliked = reply.likedBy.includes(userId);
+
+    if (alreadyliked) {
+      reply.likes -= 1;
+      reply.likedBy = reply.likedBy.filter((id) => id !== userId);
+    }
+
+    reply.dislikes += 1;
+    reply.dislikedBy.push(userId);
+
+    const updated = await comment.save();
+
+    broadcast("dislike-reply", updated);
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to dislike comment" });
+  }
+};
+
+const editReply = async (req, res) => {
+  const userId = req.user.uid;
+  const { text } = req.body;
+  const { commentId, replyId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+    if (reply.userId !== userId)
+      return res.status(403).json({ message: "Unauthorized" });
+
+    reply.text = text;
+    const updated = await comment.save();
+
+    broadcast("edit-reply", updated);
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to edit comment" });
+  }
+};
+
+const deleteReply = async (req, res) => {
+  const userId = req.user.uid;
+  const { commentId, replyId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    const reply = comment.replies.id(replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+    if (reply.userId !== userId)
+      return res.status(403).json({ message: "Unauthorized" });
+
+    comment.replies = comment.replies.filter(
+      (r) => r._id.toString() !== replyId
+    );
+
+    // reply.remove();
+    await comment.save();
+
+    broadcast("delete-reply", commentId);
+    res.status(200).json({ message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete comment" });
+  }
+};
+
 module.exports = {
   initSocket,
   getComments,
@@ -172,4 +291,8 @@ module.exports = {
   dislikeComment,
   editComment,
   deleteComment,
+  likeReply,
+  dislikeReply,
+  editReply,
+  deleteReply,
 };
