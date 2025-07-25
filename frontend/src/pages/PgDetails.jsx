@@ -68,7 +68,7 @@ const PgDetails = () => {
                 razorpay_order_id: res.razorpay_order_id,
                 razorpay_payment_id: res.razorpay_payment_id,
                 razorpay_signature: res.razorpay_signature,
-                amount: result.amount / 100,
+                amount: result.amount, // Send original amount
               })
             ).unwrap();
             toast.success("Payment Successful!");
@@ -186,23 +186,25 @@ const PgDetails = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <FaPhoneAlt className="text-blue-400 text-lg flex-shrink-0" />
-                  <div className="min-w-0">
+                {/* highlight-start */}
+                {/* --- Corrected Layout for Contact & Email --- */}
+                <div className="flex items-start gap-3">
+                  <FaPhoneAlt className="text-blue-400 text-lg flex-shrink-0 mt-1" />
+                  <div>
                     <p className="text-sm text-gray-400">Contact</p>
-                    <p className="font-semibold truncate">
+                    <p className="font-semibold break-all">
                       {selectedPg.contactNumber}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <FaEnvelope className="text-blue-400 text-lg flex-shrink-0" />
-                  <div className="min-w-0">
+                <div className="flex items-start gap-3">
+                  <FaEnvelope className="text-blue-400 text-lg flex-shrink-0 mt-1" />
+                  <div>
                     <p className="text-sm text-gray-400">Email</p>
-                    <p className="font-semibold truncate">{selectedPg.email}</p>
+                    <p className="font-semibold break-all">{selectedPg.email}</p>
                   </div>
                 </div>
+                {/* highlight-end */}
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">About this PG</h3>
@@ -228,7 +230,7 @@ const PgDetails = () => {
                   onClick={() => handleAddCart(selectedPg._id)}
                   className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
                 >
-                  <FaShoppingCart />
+                  <FaShoppingCart /> Add to List
                 </button>
                 <button
                   onClick={() =>
@@ -242,7 +244,7 @@ const PgDetails = () => {
             </div>
           </div>
         </div>
-        <section className="max-w-4xl mx-auto px-4 mt-10">
+        <section className="max-w-4xl mx-auto mt-10">
           <CommentSection pgId={selectedPg._id} />
         </section>
       </main>

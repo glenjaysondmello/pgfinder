@@ -9,6 +9,7 @@ const userRoleRoutes = require("./routes/userRoleRouter");
 const cartRoutes = require("./routes/cartRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const chatbotRoutes = require("./routes/chatbotRoutes");
 const { initSocket } = require("./controllers/commentController");
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/userrole", userRoleRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/pay", paymentRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/chat", chatbotRoutes);
 
 initSocket(io);
 io.on("connection", (socket) => {

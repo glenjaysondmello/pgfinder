@@ -22,9 +22,9 @@ const PageLayout = ({ children }) => (
 const TypingIndicator = () => (
   <div className="flex justify-start">
     <div className="bg-gray-700 text-gray-200 rounded-r-xl rounded-t-xl p-3 flex items-center space-x-2">
-        <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-        <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-        <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+      <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+      <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+      <span className="block w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
     </div>
   </div>
 );
@@ -35,7 +35,8 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
       type: "bot",
-      content: "Hello! I'm the PG Finder Bot. How can I help you find a PG today? You can ask me about locations, prices, or amenities.",
+      content:
+        "Hello! I'm the PG Finder Bot. How can I help you find a PG today? You can ask me about locations, prices, or amenities.",
     },
   ]);
   const [error, setError] = useState("");
@@ -52,7 +53,7 @@ const Chatbot = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    
+
     setError("");
     const userMessage = { type: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -60,13 +61,17 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/chat", {
+      const res = await axios.post("http://localhost:5000/api/chat/chatbot", {
         message: input,
       });
       const botMessage = { type: "bot", content: res.data.message };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      const errorMessage = { type: 'bot', content: "Sorry, I'm having trouble connecting right now. Please try again later." };
+      const errorMessage = {
+        type: "bot",
+        content:
+          "Sorry, I'm having trouble connecting right now. Please try again later.",
+      };
       setMessages((prev) => [...prev, errorMessage]);
       console.error(err);
     } finally {
@@ -78,13 +83,26 @@ const Chatbot = () => {
     <PageLayout>
       <div className="max-w-4xl w-full mx-auto h-full flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
         <div className="p-4 border-b border-gray-700">
-            <h1 className="text-xl font-bold text-white text-center">Chat with PG Bot</h1>
+          <h1 className="text-xl font-bold text-white text-center">
+            Chat with PG Bot
+          </h1>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message, index) => (
-            <div key={index} className={`flex items-end gap-2 ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-              {message.type === 'bot' && <img src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180" alt="bot" className="w-8 h-8 rounded-full"/>}
+            <div
+              key={index}
+              className={`flex items-end gap-2 ${
+                message.type === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              {message.type === "bot" && (
+                <img
+                  src="https://tse3.mm.bing.net/th?id=OIP.VB187cXwkH66uPWT3X34JQHaHa&pid=Api&P=0&h=180"
+                  alt="bot"
+                  className="w-8 h-8 rounded-full"
+                />
+              )}
               <div
                 className={`max-w-[75%] rounded-lg p-3 text-white ${
                   message.type === "user"
@@ -92,7 +110,9 @@ const Chatbot = () => {
                     : "bg-gray-700 rounded-b-xl rounded-tr-xl"
                 }`}
               >
-                {message.content.split('\n').map((line, i) => <p key={i}>{line}</p>)}
+                {message.content.split("\n").map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
               </div>
             </div>
           ))}
