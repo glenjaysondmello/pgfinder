@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 // const API_URL = "http://localhost:5000/api/comments";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const API_URL = `${backendUrl}/api/comments`;
 
 const getAuthHeaders = () => ({
