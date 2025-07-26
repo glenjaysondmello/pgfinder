@@ -179,7 +179,7 @@ const Comment = ({
           </div>
         )}
 
-        {comment.replies && comment.replies.length > 0 && (
+        {showReplyInput && comment.replies && comment.replies.length > 0 && (
           <div className="mt-4 space-y-4 border-l-2 border-gray-700 pl-4">
             {comment.replies.map((reply) => (
               <div key={reply._id} className="flex gap-3">

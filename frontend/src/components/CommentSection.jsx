@@ -19,7 +19,9 @@ import toast from "react-hot-toast";
 import { FaPaperPlane } from "react-icons/fa";
 import Avatar from "react-avatar";
 
-const socket = io("http://localhost:5000");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const socket = io(`${backendUrl}`);
+// const socket = io("http://localhost:5000");
 
 const CommentSkeleton = () => (
   <div className="flex gap-3 my-6 animate-pulse">

@@ -64,29 +64,54 @@ const Navbar = () => {
               alt="logo"
               className="w-10 h-10 rounded-full object-cover"
             />
-            <h1 className="text-xl sm:text-2xl text-gray-200 font-medium">PG-Finder</h1>
+            <h1 className="text-xl sm:text-2xl text-gray-200 font-medium">
+              PG-Finder
+            </h1>
           </Link>
         </div>
 
         {/* Center Nav Links (Desktop) */}
         <nav className="hidden lg:flex items-center gap-8">
-          <a href="/" className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300">Home</a>
-          <a href="#about" className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300">About</a>
-          <a href="#contact" className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300">Contact</a>
+          <a
+            href="/"
+            className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300"
+          >
+            Home
+          </a>
+          <a
+            href="/#about"
+            className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300"
+          >
+            About
+          </a>
+          <a
+            href="/#contact"
+            className="text-gray-300 hover:text-white font-medium text-lg transition-colors duration-300"
+          >
+            Contact
+          </a>
         </nav>
 
         {/* Right Side: Auth (Desktop) */}
-        <div className="hidden lg:flex items-center justify-end gap-4" style={{ minWidth: '250px' }}>
+        <div
+          className="hidden lg:flex items-center justify-end gap-4"
+          style={{ minWidth: "250px" }}
+        >
           {user && token ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <Avatar
-                  src={user.photoURL || "https://tse3.mm.bing.net/th?id=OIP.btgP01toqugcXjPwAF-k2AHaHa&pid=Api&P=0&h=180"}
+                  src={
+                    user.photoURL ||
+                    "https://tse3.mm.bing.net/th?id=OIP.btgP01toqugcXjPwAF-k2AHaHa&pid=Api&P=0&h=180"
+                  }
                   name={user.displayName}
                   size="40"
                   round={true}
                 />
-                <h3 className="text-gray-200 font-medium truncate max-w-[100px]">{user.displayName}</h3>
+                <h3 className="text-gray-200 font-medium truncate max-w-[100px]">
+                  {user.displayName}
+                </h3>
               </div>
               <button
                 onClick={logOut}
@@ -97,7 +122,12 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Link to="/login" className="text-gray-300 hover:text-white transition-colors duration-300 font-medium">Login</Link>
+              <Link
+                to="/login"
+                className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+              >
+                Login
+              </Link>
               <Link
                 to="/signup"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all duration-300 hover:shadow-[0_0_15px_rgba(37,99,235,0.5)]"
