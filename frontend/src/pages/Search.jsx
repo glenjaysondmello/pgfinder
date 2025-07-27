@@ -46,7 +46,7 @@ const Search = () => {
 
   useEffect(() => {
     dispatch(setQuery(""));
-    dispatch(clearResults(""));
+    return () => dispatch(clearResults(""));
   }, [currentUser, dispatch]);
 
   return (
