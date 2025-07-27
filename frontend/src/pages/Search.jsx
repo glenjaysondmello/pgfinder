@@ -18,6 +18,8 @@ const Search = () => {
     (store) => store.search
   );
 
+  const { currentUser } = useSelector((store) => store.auth);
+
   const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   useEffect(() => {
@@ -41,6 +43,10 @@ const Search = () => {
       dispatch(clearResults());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!currentUser) setDebouncedQuery("");
+  }, [currentUser]);
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">
