@@ -45,8 +45,9 @@ const Search = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!currentUser) setDebouncedQuery("");
-  }, [currentUser]);
+    dispatch(setQuery(""));
+    dispatch(clearResults(""));
+  }, [currentUser, dispatch]);
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">

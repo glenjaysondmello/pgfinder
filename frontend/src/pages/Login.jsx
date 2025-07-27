@@ -20,6 +20,8 @@ const Login = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
+  const { currentUser } = useSelector((store) => store.auth);
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmit = async ({ email, password }) => {
