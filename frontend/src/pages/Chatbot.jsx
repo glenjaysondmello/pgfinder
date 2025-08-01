@@ -57,7 +57,7 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${backendUrl}/api/chat`, {
+      const res = await axios.post(`${backendUrl}/api/bot/chat`, {
         message: input,
       });
 
