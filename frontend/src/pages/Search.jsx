@@ -18,7 +18,7 @@ const Search = () => {
     (store) => store.search
   );
 
-  const { currentUser } = useSelector((store) => store.auth);
+  // const { currentUser } = useSelector((store) => store.auth);
 
   const [debouncedQuery, setDebouncedQuery] = useState(query);
 
@@ -44,10 +44,10 @@ const Search = () => {
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(setQuery(""));
-    return () => dispatch(clearResults(""));
-  }, [currentUser, dispatch]);
+  // useEffect(() => {
+  //   dispatch(setQuery(""));
+  //   return () => dispatch(clearResults(""));
+  // }, [currentUser, dispatch]);
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">

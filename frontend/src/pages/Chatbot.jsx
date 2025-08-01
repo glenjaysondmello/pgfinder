@@ -4,21 +4,16 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { FaPaperPlane } from "react-icons/fa";
 
-// A simple layout component for consistent page structure
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen flex flex-col">
     <Sidebar />
     <header className="fixed top-0 left-0 w-full z-40">
       <Navbar />
     </header>
-    <main className="flex-1 pt-24 sm:pt-28 pb-4 px-4 flex">
-      {/* Added flex to the main tag to help children with h-full */}
-      {children}
-    </main>
+    <main className="flex-1 pt-24 sm:pt-28 pb-4 px-4 flex">{children}</main>
   </div>
 );
 
-// The "Bot is typing..." indicator component
 const TypingIndicator = () => (
   <div className="flex justify-start">
     <div className="bg-gray-700 text-gray-200 rounded-r-xl rounded-t-xl p-3 flex items-center space-x-2">
@@ -62,10 +57,11 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${backendUrl}/api/chat/chatbot`, {
+      const res = await axios.post(`${backendUrl}/api/chat`, {
         message: input,
       });
-      const botMessage = { type: "bot", content: res.data.message };
+
+      const botMessage = { type: "bot", content: res.data.reply }; // updated key
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       const errorMessage = {
@@ -129,7 +125,6 @@ const Chatbot = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isLoading}
-              // highlight-next-line
               className="flex-1 min-w-0 bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
             />
             <button
