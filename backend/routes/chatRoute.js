@@ -2,10 +2,11 @@
 const express = require("express");
 const { generateAIResponse } = require("../chatbot/groqBot");
 const PG = require("../models/PgRoom");
+const { verifyToken } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.post("/chat", async (req, res) => {
+router.post("/chat", verifyToken, async (req, res) => {
   const { message } = req.body;
 
   if (!message) {

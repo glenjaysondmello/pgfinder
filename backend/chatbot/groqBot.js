@@ -4,7 +4,9 @@ const generateAIResponse = async (userMsg, pgData) => {
   const formattedPGs = pgData
     .map(
       (pg) =>
-        `Name: ${pg.name}, Location: ${pg.location}, Price: ₹${pg.price}, Amenities: ${pg.amenities.join(", ")}`
+        `Name: ${pg.name}, Location: ${pg.location}, Price: ₹${
+          pg.price
+        }, Amenities: ${pg.amenities.join(", ")}`
     )
     .join("\n");
 
@@ -23,7 +25,7 @@ const generateAIResponse = async (userMsg, pgData) => {
     const res = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "meta-llama/llama-4-scout-17b-16e-instruct", // ✅ Use a valid Groq model
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
         messages,
         temperature: 0.7,
         max_tokens: 1024,
