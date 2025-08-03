@@ -14,14 +14,24 @@ const handleChat = async (req, res) => {
     const pgList = await PG.find();
     const reply = await generateAIResponse(message, pgList);
 
-    const chat = ChatModel.findOne({ userId });
+    const chat = await ChatModel.findOne({ userId });
 
-    if (!chat) new ChatModel.create({ userId, messages: [] });
+    if (!chat) {
+      new ChatModel({
+        userId,
+        messages: [
+          { type: "user", content: message },
+          { type: "bot", content: reply },
+        ],
+      });
 
-    chat.messages.push({ type: "user", content: message });
-    chat.messages.push({ type: "bot", content: reply });
+      await chat.save();
+    } else {
+      chat.messages.push({ type: "user", content: message });
+      chat.messages.push({ type: "bot", content: reply });
 
-    await chat.save();
+      await chat.save();
+    }
 
     res.json({ reply });
   } catch (err) {

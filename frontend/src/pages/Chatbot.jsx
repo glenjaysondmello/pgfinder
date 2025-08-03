@@ -54,6 +54,14 @@ const Chatbot = () => {
 
         if (res.data.messages.length > 0) {
           setMessages(res.data.messages);
+        } else {
+          setMessages([
+            {
+              type: "bot",
+              content:
+                "Hello! I'm the PG Finder Bot. How can I help you find a PG today?",
+            },
+          ]);
         }
       } catch (err) {
         console.error("Failed to fetch chat history", err);
