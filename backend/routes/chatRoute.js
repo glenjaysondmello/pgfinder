@@ -1,26 +1,11 @@
 // backend/routes/chat.js
 const express = require("express");
-const { generateAIResponse } = require("../chatbot/groqBot");
-const PG = require("../models/PgRoom");
+const { handleChat, getUserChat } = require("../controllers/chatController");
 const { verifyToken } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.post("/chat", verifyToken, async (req, res) => {
-  const { message } = req.body;
-
-  if (!message) {
-    return res.status(400).json({ error: "Message is required" });
-  }
-
-  try {
-    const pgList = await PG.find(); // Get all PGs from MongoDB
-    const reply = await generateAIResponse(message, pgList);
-    res.json({ reply });
-  } catch (err) {
-    console.error("Chat endpoint error:", err);
-    res.status(500).json({ error: "Failed to generate reply" });
-  }
-});
+router.post("/chat", verifyToken, handleChat);
+router.get("/chat/history", verifyToken, getUserChat);
 
 module.exports = router;

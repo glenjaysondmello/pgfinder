@@ -43,6 +43,27 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/api/bot/chat/history`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        });
+
+        if (res.data.messages.length > 0) {
+          setMessages(res.data.messages);
+        }
+      } catch (err) {
+        console.error("Failed to fetch chat history", err);
+      }
+    };
+
+    fetchChatHistory();
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
 
@@ -57,15 +78,19 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${backendUrl}/api/bot/chat`, {
-        message: input,
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await axios.post(
+        `${backendUrl}/api/bot/chat`,
+        {
+          message: input,
         },
-        withCredentials: true,
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       const botMessage = { type: "bot", content: res.data.reply }; // updated key
       setMessages((prev) => [...prev, botMessage]);
