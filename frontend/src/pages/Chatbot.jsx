@@ -59,6 +59,12 @@ const Chatbot = () => {
     try {
       const res = await axios.post(`${backendUrl}/api/bot/chat`, {
         message: input,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        withCredentials: true,
       });
 
       const botMessage = { type: "bot", content: res.data.reply }; // updated key
