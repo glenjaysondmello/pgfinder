@@ -217,13 +217,6 @@ const Chatbot = () => {
           <h1 className="text-xl font-bold text-white text-center flex-1">
             Chat with PG Bot
           </h1>
-          <button
-            onClick={handleClearHistory}
-            className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-full"
-            title="Clear chat history"
-          >
-            <FaTrash />
-          </button>
         </div>
 
         {renderChatContent()}
