@@ -17,7 +17,7 @@ const handleChat = async (req, res) => {
     const chat = await ChatModel.findOne({ userId });
 
     if (!chat) {
-      new ChatModel({
+      chat = new ChatModel({
         userId,
         messages: [
           { type: "user", content: message },
