@@ -28,13 +28,7 @@ const Chatbot = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      type: "bot",
-      content:
-        "Hello! I'm the PG Finder Bot. How can I help you find a PG today? You can ask me about locations, prices, or amenities.",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
 
@@ -59,7 +53,7 @@ const Chatbot = () => {
             {
               type: "bot",
               content:
-                "Hello! I'm the PG Finder Bot. How can I help you find a PG today?",
+                "Hello! I'm the PG Finder Bot. How can I help you find a PG today? You can ask me about locations, prices, or amenities.",
             },
           ]);
         }

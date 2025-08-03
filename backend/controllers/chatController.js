@@ -14,7 +14,7 @@ const handleChat = async (req, res) => {
     const pgList = await PG.find();
     const reply = await generateAIResponse(message, pgList);
 
-    const chat = await ChatModel.findOne({ userId });
+    let chat = await ChatModel.findOne({ userId });
 
     if (!chat) {
       chat = new ChatModel({
