@@ -3,6 +3,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { FaPaperPlane } from "react-icons/fa";
+import Loader from "../animations/Loader";
 
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen flex flex-col">
@@ -10,7 +11,9 @@ const PageLayout = ({ children }) => (
     <header className="fixed top-0 left-0 w-full z-40">
       <Navbar />
     </header>
-    <main className="flex-1 pt-24 sm:pt-28 pb-4 px-4 flex">{children}</main>
+    <div className="max-w-4xl w-full mx-auto h-full flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+      <main className="flex-1 pt-24 sm:pt-28 pb-4 px-4 flex">{children}</main>
+    </div>
   </div>
 );
 
@@ -27,6 +30,7 @@ const TypingIndicator = () => (
 const Chatbot = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [input, setInput] = useState("");
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
@@ -39,6 +43,7 @@ const Chatbot = () => {
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
+        setLoadingHistory(true);
         const res = await axios.get(`${backendUrl}/api/bot/chat/history`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -59,6 +64,8 @@ const Chatbot = () => {
         }
       } catch (err) {
         console.error("Failed to fetch chat history", err);
+      } finally {
+        setLoadingHistory(false);
       }
     };
 
@@ -82,9 +89,7 @@ const Chatbot = () => {
     try {
       const res = await axios.post(
         `${backendUrl}/api/bot/chat`,
-        {
-          message: input,
-        },
+        { message: input },
         {
           headers: {
             "Content-Type": "application/json",
@@ -94,7 +99,7 @@ const Chatbot = () => {
         }
       );
 
-      const botMessage = { type: "bot", content: res.data.reply }; // updated key
+      const botMessage = { type: "bot", content: res.data.reply };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       const errorMessage = {
@@ -109,9 +114,19 @@ const Chatbot = () => {
     }
   };
 
+  if (loadingHistory) {
+    return (
+      <PageLayout>
+        <div className="w-full h-full flex justify-center items-center">
+          <Loader />
+        </div>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
-      <div className="max-w-4xl w-full mx-auto h-full flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+      <div className="w-full flex flex-col h-full">
         <div className="p-4 border-b border-gray-700">
           <h1 className="text-xl font-bold text-white text-center">
             Chat with PG Bot
