@@ -19,7 +19,7 @@ const Navbar = () => {
     signOut(auth)
       .then(() => {
         dispatch(clearAuthUser());
-        toast.success("Logged Out Successfully");
+        toast.success("Logged Out Successfully ");
         navigate("/");
       })
       .catch((error) => {
