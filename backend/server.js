@@ -29,11 +29,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// https://pgfinder-wheat.vercel.app
+// http://localhost:5173
 // https://paying-guest-application.onrender.com
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://pgfinder-wheat.vercel.app",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
