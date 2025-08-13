@@ -61,7 +61,6 @@ const CommentSection = ({ pgId }) => {
 
     return () => {
       events.forEach((event) => socket.off(event, handleUpdate));
-      socket.disconnect();
     };
   }, [dispatch, pgId]);
 

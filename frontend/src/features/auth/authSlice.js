@@ -10,14 +10,18 @@ const authSlice = createSlice({
   },
   reducers: {
     setAuthUser: (state, action) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.role = action.payload.role;
-      state.currentUser = action.payload.user.uid;
+      const user = action.payload.user || null;
+      const token = action.payload.token || null;
+      const role = action.payload.role || null;
 
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("role", action.payload.role);
+      state.user = user;
+      state.token = token;
+      state.role = role;
+      state.currentUser = user.uid;
+
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
     },
     clearAuthUser: (state) => {
       state.user = null;

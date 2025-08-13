@@ -16,7 +16,11 @@ const chatRoute = require("./routes/chatRoute");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST", "PATCH", "DELETE"] },
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true,
+  },
 });
 
 const PORT = process.env.PORT || 5000;
@@ -25,9 +29,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// https://pgfinder-wheat.vercel.app
+// https://paying-guest-application.onrender.com
 app.use(
   cors({
-    origin: "https://pgfinder-wheat.vercel.app",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
@@ -43,6 +49,7 @@ app.use("/api/bot", chatRoute);
 // app.use("/api/chat", chatbotRoutes);
 
 initSocket(io);
+
 io.on("connection", (socket) => {
   console.log("User connected: ", socket.id);
   socket.on("disconnect", () => {
@@ -52,6 +59,6 @@ io.on("connection", (socket) => {
 
 connectDB();
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on PORT 5000`);
 });
