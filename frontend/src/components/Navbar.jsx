@@ -11,14 +11,14 @@ import toast from "react-hot-toast";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
-  const dispatchs = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const logOut = () => {
     signOut(auth)
       .then(() => {
-        dispatchs(clearAuthUser());
+        dispatch(clearAuthUser());
         toast.success("Logged Out Successfully ");
         navigate("/");
       })
@@ -33,7 +33,7 @@ const Navbar = () => {
         // This part of the logic might be redundant if you already handle auth state
         // in your main App component or a dedicated auth listener hook.
         // For now, it ensures the navbar is self-sufficient.
-        dispatchs(
+        dispatch(
           setAuthUser({
             uid: user.uid,
             email: user.email,
@@ -42,11 +42,11 @@ const Navbar = () => {
           })
         );
       } else {
-        dispatchs(setAuthUser(null));
+        dispatch(setAuthUser(null));
       }
     });
     return () => unsubscribe();
-  }, [dispatchs]);
+  }, [dispatch]);
 
   return (
     <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 mx-2 sm:mx-4 my-4 shadow-[0_8px_32px_rgb(0_0_0/0.5)]">
@@ -54,7 +54,7 @@ const Navbar = () => {
         {/* Left Side: Hamburger & Logo */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => dispatchs(setBarOpen())}
+            onClick={() => dispatch(setBarOpen())}
             className="p-2 rounded-full hover:bg-gray-700/60 transition-colors duration-300"
           >
             <RxHamburgerMenu size={24} className="text-gray-200" />
@@ -94,10 +94,7 @@ const Navbar = () => {
         </nav>
 
         {/* Right Side: Auth Section (Responsive) */}
-        <div
-          className="flex items-center justify-end"
-          style={{ minWidth: "50px" }}
-        >
+        <div className="flex items-center justify-end" style={{ minWidth: "50px" }}>
           {user && token ? (
             // --- Logged In View ---
             <div className="flex items-center gap-4">
