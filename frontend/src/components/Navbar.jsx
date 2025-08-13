@@ -7,7 +7,6 @@ import { signOut } from "firebase/auth";
 import { clearAuthUser, setAuthUser } from "../features/auth/authSlice";
 import Avatar from "react-avatar";
 import { setBarOpen } from "../features/sidebar/sidebarSlice";
-// import { clearCart } from "../features/pgslice/pgSlice";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
@@ -31,6 +30,9 @@ const Navbar = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
+        // This part of the logic might be redundant if you already handle auth state
+        // in your main App component or a dedicated auth listener hook.
+        // For now, it ensures the navbar is self-sufficient.
         dispatch(
           setAuthUser({
             uid: user.uid,
@@ -53,8 +55,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => dispatch(setBarOpen())}
-            // highlight-next-line
-            className="p-2 rounded-full hover:bg-gray-700/60 transition-colors duration-300" // <-- REMOVED lg:hidden from here
+            className="p-2 rounded-full hover:bg-gray-700/60 transition-colors duration-300"
           >
             <RxHamburgerMenu size={24} className="text-gray-200" />
           </button>
@@ -92,12 +93,10 @@ const Navbar = () => {
           </a>
         </nav>
 
-        {/* Right Side: Auth (Desktop) */}
-        <div
-          className="hidden lg:flex items-center justify-end gap-4"
-          style={{ minWidth: "250px" }}
-        >
+        {/* Right Side: Auth Section (Responsive) */}
+        <div className="flex items-center justify-end" style={{ minWidth: "50px" }}>
           {user && token ? (
+            // --- Logged In View ---
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <Avatar
@@ -109,19 +108,22 @@ const Navbar = () => {
                   size="40"
                   round={true}
                 />
-                <h3 className="text-gray-200 font-medium truncate max-w-[100px]">
+                {/* Name is hidden on mobile, visible on tablet and up */}
+                <h3 className="hidden md:block text-gray-200 font-medium truncate max-w-[100px]">
                   {user.displayName}
                 </h3>
               </div>
+              {/* Logout button is hidden on mobile/tablet, visible on desktop */}
               <button
                 onClick={logOut}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-all duration-300 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+                className="hidden lg:block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-all duration-300 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
               >
                 Logout
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
+            // --- Logged Out View (Desktop Only) ---
+            <div className="hidden lg:flex items-center gap-4">
               <Link
                 to="/login"
                 className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
