@@ -1,5 +1,8 @@
 const { mongoose } = require("mongoose");
 const Cart = require("../models/Cart");
+const redisClient = require("../redis/redisClient");
+
+const CACHE_TTL = 1800;
 
 const addToCart = async (req, res) => {
   try {
@@ -25,6 +28,9 @@ const addToCart = async (req, res) => {
     }
 
     await cart.save();
+
+    await redisClient.del(`cart:${uid}`);
+
     res.json({ message: "Item added to cart successfully", cart });
   } catch (error) {
     res.status(500).json({ error: "Error adding item to cart" });
@@ -43,8 +49,12 @@ const removeFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    cart.items = cart.items.filter((item) => item.pgId.toString() !== pgObjectId.toString());
+    cart.items = cart.items.filter(
+      (item) => item.pgId.toString() !== pgObjectId.toString()
+    );
     await cart.save();
+
+    await redisClient.del(`cart:${uid}`);
 
     res.json({ message: "Item removed from cart", cart });
   } catch (error) {
@@ -55,6 +65,14 @@ const removeFromCart = async (req, res) => {
 const fetchCartItems = async (req, res) => {
   try {
     const { uid } = req.user;
+    const cacheKey = `cart:${uid}`;
+
+    const cachedCart = await redisClient.get(cacheKey);
+
+    if (cachedCart) {
+      console.log("Serving Cart from Redis cache");
+      return res.json(JSON.parse(cachedCart));
+    }
 
     const cart = await Cart.findOne({ userId: uid }).populate("items.pgId");
 
@@ -63,6 +81,8 @@ const fetchCartItems = async (req, res) => {
     }
 
     cart.items = cart.items.filter((item) => item.pgId !== null);
+
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(cart));
 
     res.json(cart);
   } catch (error) {

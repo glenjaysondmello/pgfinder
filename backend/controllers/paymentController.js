@@ -6,6 +6,9 @@ const Payment = require("../models/Payment");
 const fs = require("fs");
 const path = require("path");
 const PgRoom = require("../models/PgRoom");
+const redisClient = require("../redis/redisClient");
+
+const CACHE_TTL = 1800;
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -62,6 +65,9 @@ const verify = async (req, res) => {
         amount,
         status: "success",
       });
+
+      await redisClient.del(`user:${uid}:payments`);
+      await redisClient.del("admin:payments");
 
       const invoiceDir = path.join(__dirname, "../invoices");
 
@@ -145,7 +151,19 @@ const verify = async (req, res) => {
 const userPayments = async (req, res) => {
   try {
     const { uid } = req.user;
+    const cacheKey = `user:${uid}:payments`;
+
+    const cached = await redisClient.get(cacheKey);
+
+    if (cached) {
+      console.log("Serving user payments from Redis");
+      return res.status(200).json(JSON.parse(cached));
+    }
+
     const payments = await Payment.find({ user: uid }).sort({ createdAt: -1 });
+
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(payments));
+
     res.status(200).json(payments);
   } catch (error) {
     console.error("payment fetch error for user", error);
@@ -155,7 +173,19 @@ const userPayments = async (req, res) => {
 
 const adminPayments = async (req, res) => {
   try {
+    const cacheKey = "admin:payments";
+
+    const cached = await redisClient.get(cacheKey);
+
+    if (cached) {
+      console.log("Serving admin payments from Redis");
+      return res.status(200).json(JSON.parse(cached));
+    }
+
     const payments = await Payment.find().sort({ createdAt: -1 });
+
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(payments));
+
     res.status(200).json(payments);
   } catch (error) {
     console.error("payment fetch error for admin", error);

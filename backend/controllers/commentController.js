@@ -1,4 +1,5 @@
 const Comment = require("../models/Comment");
+const redisClient = require("../redis/redisClient");
 
 let io;
 const initSocket = (_io) => (io = _io);
@@ -8,10 +9,22 @@ const broadcast = (event, data) => {
 };
 
 const getComments = async (req, res) => {
+  const { pgId } = req.params;
+  const cacheKey = `comments:${pgId}`;
+
   try {
-    const comments = await Comment.find({ pgId: req.params.pgId }).sort({
+    const cachedComments = await redisClient.get(cacheKey);
+
+    if (cachedComments) {
+      return res.status(200).json(JSON.parse(cachedComments));
+    }
+
+    const comments = await Comment.find({ pgId }).sort({
       createdAt: -1,
     });
+
+    await redisClient.setEx(cacheKey, 60, JSON.stringify(comments));
+
     res.status(200).json(comments);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch comments" });
@@ -31,6 +44,8 @@ const postComment = async (req, res) => {
       username,
       text,
     });
+
+    await redisClient.del(`comments:${pgId}`);
 
     broadcast("new-comment", newComment);
 
@@ -53,6 +68,8 @@ const replyToComment = async (req, res) => {
 
     comment.replies.push({ userId, username, text });
     const updated = await comment.save();
+
+    await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("reply-added", updated);
     res.status(200).json(updated);
@@ -84,6 +101,8 @@ const likeComment = async (req, res) => {
 
     const updated = await comment.save();
 
+    await redisClient.del(`comments:${comment.pgId}`);
+
     broadcast("like-update", updated);
     res.status(200).json(updated);
   } catch (error) {
@@ -114,6 +133,8 @@ const dislikeComment = async (req, res) => {
 
     const updated = await comment.save();
 
+    await redisClient.del(`comments:${comment.pgId}`);
+
     broadcast("dislike-update", updated);
     res.status(200).json(updated);
   } catch (error) {
@@ -136,6 +157,8 @@ const editComment = async (req, res) => {
     comment.text = text;
     const updated = await comment.save();
 
+    await redisClient.del(`comments:${comment.pgId}`);
+
     broadcast("edit-comment", updated);
     res.status(200).json(updated);
   } catch (error) {
@@ -155,6 +178,8 @@ const deleteComment = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
 
     await comment.deleteOne();
+
+    await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("delete-comment", commentId);
     res.status(200).json({ message: "Deleted successfully" });
@@ -189,6 +214,8 @@ const likeReply = async (req, res) => {
 
     const updated = await comment.save();
 
+    await redisClient.del(`comments:${comment.pgId}`);
+
     broadcast("like-reply", updated);
     res.status(200).json(updated);
   } catch (error) {
@@ -222,6 +249,8 @@ const dislikeReply = async (req, res) => {
 
     const updated = await comment.save();
 
+    await redisClient.del(`comments:${comment.pgId}`);
+
     broadcast("dislike-reply", updated);
     res.status(200).json(updated);
   } catch (error) {
@@ -246,6 +275,8 @@ const editReply = async (req, res) => {
 
     reply.text = text;
     const updated = await comment.save();
+
+    await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("edit-reply", updated);
     res.status(200).json(updated);
@@ -274,6 +305,8 @@ const deleteReply = async (req, res) => {
 
     // reply.remove();
     await comment.save();
+
+    await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("delete-reply", commentId);
     res.status(200).json({ message: "Deleted successfully" });
