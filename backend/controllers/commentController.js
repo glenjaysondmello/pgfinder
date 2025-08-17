@@ -1,6 +1,8 @@
 const Comment = require("../models/Comment");
 const redisClient = require("../redis/redisClient");
 
+const CACHE_TTL = 60;
+
 let io;
 const initSocket = (_io) => (io = _io);
 
@@ -23,7 +25,7 @@ const getComments = async (req, res) => {
       createdAt: -1,
     });
 
-    await redisClient.setEx(cacheKey, 60, JSON.stringify(comments));
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(comments));
 
     res.status(200).json(comments);
   } catch (error) {
@@ -91,20 +93,34 @@ const likeComment = async (req, res) => {
 
     const alreadyDisliked = comment.dislikedBy.includes(userId);
 
+    // if (alreadyDisliked) {
+    //   comment.dislikes -= 1;
+    //   comment.dislikedBy = comment.dislikedBy.filter((id) => id !== userId);
+    // }
+
+    // comment.likes += 1;
+    // comment.likedBy.push(userId);
+
+    // const updated = await comment.save();
+
+    const updated = {
+      $inc: { likes: 1 },
+      $addToSet: { likedBy: userId },
+    };
+
     if (alreadyDisliked) {
-      comment.dislikes -= 1;
-      comment.dislikedBy = comment.dislikedBy.filter((id) => id !== userId);
+      updated.$inc.dislikes = -1;
+      updated.$pull = { dislikedBy: userId };
     }
 
-    comment.likes += 1;
-    comment.likedBy.push(userId);
-
-    const updated = await comment.save();
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, updated, {
+      new: true,
+    });
 
     await redisClient.del(`comments:${comment.pgId}`);
 
-    broadcast("like-update", updated);
-    res.status(200).json(updated);
+    broadcast("like-update", updatedComment);
+    res.status(200).json(updatedComment);
   } catch (error) {
     res.status(500).json({ message: "Failed to like comment" });
   }
@@ -123,20 +139,34 @@ const dislikeComment = async (req, res) => {
 
     const alreadyliked = comment.likedBy.includes(userId);
 
+    // if (alreadyliked) {
+    //   comment.likes -= 1;
+    //   comment.likedBy = comment.likedBy.filter((id) => id !== userId);
+    // }
+
+    // comment.dislikes += 1;
+    // comment.dislikedBy.push(userId);
+
+    // const updated = await comment.save();
+
+    const updated = {
+      $inc: { dislikes: 1 },
+      $addToSet: { dislikedBy: userId },
+    };
+
     if (alreadyliked) {
-      comment.likes -= 1;
-      comment.likedBy = comment.likedBy.filter((id) => id !== userId);
+      updated.$inc.likes = -1;
+      updated.$pull = { likedBy: userId };
     }
 
-    comment.dislikes += 1;
-    comment.dislikedBy.push(userId);
-
-    const updated = await comment.save();
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, updated, {
+      new: true,
+    });
 
     await redisClient.del(`comments:${comment.pgId}`);
 
-    broadcast("dislike-update", updated);
-    res.status(200).json(updated);
+    broadcast("dislike-update", updatedComment);
+    res.status(200).json(updatedComment);
   } catch (error) {
     res.status(500).json({ message: "Failed to dislike comment" });
   }
@@ -193,31 +223,41 @@ const likeReply = async (req, res) => {
   const { commentId, replyId } = req.params;
 
   try {
-    const comment = await Comment.findById(commentId);
-    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    const comment = await Comment.findOne(
+      { _id: commentId, "replies._id": replyId },
+      { "replies.$": 1 }
+    );
 
-    const reply = comment.replies.id(replyId);
-    if (!reply) return res.status(404).json({ message: "Reply not found" });
-
-    if (reply.likedBy.includes(userId))
-      return res.status(400).json({ message: "You already liked" });
-
-    const alreadyDisliked = reply.dislikedBy.includes(userId);
-
-    if (alreadyDisliked) {
-      reply.dislikes -= 1;
-      reply.dislikedBy = reply.dislikedBy.filter((id) => id !== userId);
+    if (!comment || !comment.replies.length) {
+      return res.status(404).json({ message: "Reply not found" });
     }
 
-    reply.likes += 1;
-    reply.likedBy.push(userId);
+    const reply = comment.replies[0];
 
-    const updated = await comment.save();
+    if (reply.likedBy.includes(userId)) {
+      return res.status(400).json({ message: "You already liked this reply" });
+    }
 
-    await redisClient.del(`comments:${comment.pgId}`);
+    const update = {
+      $inc: { "replies.$.likes": 1 },
+      $addToSet: { "replies.$.likedBy": userId },
+    };
 
-    broadcast("like-reply", updated);
-    res.status(200).json(updated);
+    if (reply.dislikedBy.includes(userId)) {
+      update.$inc["replies.$.dislikes"] = -1;
+      update.$pull = { "replies.$.dislikedBy": userId };
+    }
+
+    const updatedComment = await Comment.findOneAndUpdate(
+      { _id: commentId, "replies._id": replyId },
+      update,
+      { new: true }
+    );
+
+    await redisClient.del(`comments:${updatedComment.pgId}`);
+
+    broadcast("like-reply", updatedComment);
+    res.status(200).json(updatedComment);
   } catch (error) {
     res.status(500).json({ message: "Failed to like comment" });
   }
@@ -228,31 +268,43 @@ const dislikeReply = async (req, res) => {
   const { commentId, replyId } = req.params;
 
   try {
-    const comment = await Comment.findById(commentId);
-    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    const comment = await Comment.findOne(
+      { _id: commentId, "replies._id": replyId },
+      { "replies.$": 1 }
+    );
 
-    const reply = comment.replies.id(replyId);
-    if (!reply) return res.status(404).json({ message: "Reply not found" });
-
-    if (reply.dislikedBy.includes(userId))
-      return res.status(400).json({ message: "You already disliked" });
-
-    const alreadyliked = reply.likedBy.includes(userId);
-
-    if (alreadyliked) {
-      reply.likes -= 1;
-      reply.likedBy = reply.likedBy.filter((id) => id !== userId);
+    if (!comment || !comment.replies.length) {
+      return res.status(404).json({ message: "Reply not found" });
     }
 
-    reply.dislikes += 1;
-    reply.dislikedBy.push(userId);
+    const reply = comment.replies[0];
 
-    const updated = await comment.save();
+    if (reply.dislikedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: "You already disliked this reply" });
+    }
 
-    await redisClient.del(`comments:${comment.pgId}`);
+    const update = {
+      $inc: { "replies.$.dislikes": 1 },
+      $addToSet: { "replies.$.dislikedBy": userId },
+    };
 
-    broadcast("dislike-reply", updated);
-    res.status(200).json(updated);
+    if (reply.likedBy.includes(userId)) {
+      update.$inc["replies.$.likes"] = -1;
+      update.$pull = { "replies.$.likedBy": userId };
+    }
+
+    const updatedComment = await Comment.findOneAndUpdate(
+      { _id: commentId, "replies._id": replyId },
+      update,
+      { new: true }
+    );
+
+    await redisClient.del(`comments:${updatedComment.pgId}`);
+
+    broadcast("dislike-reply", updatedComment);
+    res.status(200).json(updatedComment);
   } catch (error) {
     res.status(500).json({ message: "Failed to dislike comment" });
   }
@@ -329,3 +381,116 @@ module.exports = {
   editReply,
   deleteReply,
 };
+
+// const comment = await Comment.findById(commentId);
+//     if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+//     const reply = comment.replies.id(replyId);
+//     if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+//     if (reply.likedBy.includes(userId))
+//       return res.status(400).json({ message: "You already liked" });
+
+//     const alreadyDisliked = reply.dislikedBy.includes(userId);
+
+//     // if (alreadyDisliked) {
+//     //   reply.dislikes -= 1;
+//     //   reply.dislikedBy = reply.dislikedBy.filter((id) => id !== userId);
+//     // }
+
+//     // reply.likes += 1;
+//     // reply.likedBy.push(userId);
+
+//     // const updated = await comment.save();
+
+//     const updatedReply = await Comment.findByIdAndUpdate(
+//       replyId,
+//       {
+//         $inc: { likes: 1 },
+//         $addToSet: { likedBy: userId },
+//         $pull: { dislikedBy: userId },
+//       },
+//       { new: true }
+//     );
+
+//     if (alreadyDisliked) {
+//       updatedReply.dislikes = Math.max(0, updatedReply.dislikes - 1);
+//       await updatedComment.save();
+//     }
+
+//     await redisClient.del(`comments:${comment.pgId}`);
+
+//     broadcast("like-reply", updatedComment);
+//     res.status(200).json(updatedComment);
+
+// ----------------------------------------
+
+// const comment = await Comment.findById(commentId);
+//     if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+//     const reply = comment.replies.id(replyId);
+//     if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+//     if (reply.dislikedBy.includes(userId))
+//       return res.status(400).json({ message: "You already disliked" });
+
+//     const alreadyliked = reply.likedBy.includes(userId);
+
+//     // if (alreadyliked) {
+//     //   reply.likes -= 1;
+//     //   reply.likedBy = reply.likedBy.filter((id) => id !== userId);
+//     // }
+
+//     // reply.dislikes += 1;
+//     // reply.dislikedBy.push(userId);
+
+//     // const updated = await comment.save();
+
+//     const updatedReply = await Comment.findByIdAndUpdate(
+//       replyId,
+//       {
+//         $inc: { dislikes: 1 },
+//         $addToSet: { dislikedBy: userId },
+//         $pull: { likedBy: userId },
+//       },
+//       { new: true }
+//     );
+
+//     if (alreadyliked) {
+//       updatedReply.likes = Math.max(0, updatedReply.likes - 1);
+//       await updatedComment.save();
+//     }const comment = await Comment.findById(commentId);
+//     if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+//     const reply = comment.replies.id(replyId);
+//     if (!reply) return res.status(404).json({ message: "Reply not found" });
+
+//     if (reply.dislikedBy.includes(userId))
+//       return res.status(400).json({ message: "You already disliked" });
+
+//     const alreadyliked = reply.likedBy.includes(userId);
+
+//     // if (alreadyliked) {
+//     //   reply.likes -= 1;
+//     //   reply.likedBy = reply.likedBy.filter((id) => id !== userId);
+//     // }
+
+//     // reply.dislikes += 1;
+//     // reply.dislikedBy.push(userId);
+
+//     // const updated = await comment.save();
+
+//     const updatedReply = await Comment.findByIdAndUpdate(
+//       replyId,
+//       {
+//         $inc: { dislikes: 1 },
+//         $addToSet: { dislikedBy: userId },
+//         $pull: { likedBy: userId },
+//       },
+//       { new: true }
+//     );
+
+//     if (alreadyliked) {
+//       updatedReply.likes = Math.max(0, updatedReply.likes - 1);
+//       await updatedComment.save();
+//     }

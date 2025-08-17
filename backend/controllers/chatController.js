@@ -1,6 +1,9 @@
 const { generateAIResponse } = require("../chatbot/groqBot");
 const PG = require("../models/PgRoom");
 const ChatModel = require("../models/ChatMessage");
+const redisClient = require("../redis/redisClient");
+
+const CACHE_TTL = 900;
 
 const handleChat = async (req, res) => {
   const userId = req.user.uid;
@@ -30,6 +33,8 @@ const handleChat = async (req, res) => {
       chat.messages.push({ type: "user", content: message });
       chat.messages.push({ type: "bot", content: reply });
 
+      await redisClient.del(`chats:${userId}`);
+
       await chat.save();
     }
 
@@ -42,10 +47,19 @@ const handleChat = async (req, res) => {
 
 const getUserChat = async (req, res) => {
   const userId = req.user.uid;
+  const cacheKey = `chats:${userId}`;
 
   try {
+    const cachedChats = await redisClient.get(cacheKey);
+
+    if (cachedChats) {
+      res.json(JSON.parse(cachedChats));
+    }
+
     const chat = await ChatModel.findOne({ userId });
     const messages = chat?.messages || [];
+
+    await redisClient.setEx(cacheKey, CACHE_TTL, messages);
 
     res.json({ messages: messages });
   } catch (error) {
