@@ -18,5 +18,9 @@
     "razorpay": "^2.9.6",
     "redis": "^5.8.1",
     "socket.io": "^4.8.1"
-  }
+  },
+  "scripts": {
+  "start": "node server.js"
+}
+
 }
