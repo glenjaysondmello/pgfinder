@@ -1,7 +1,7 @@
 const { generateAIResponse } = require("../chatbot/groqBot");
 const PG = require("../models/PgRoom");
 const ChatModel = require("../models/ChatMessage");
-const redisClient = require("../redis/redisClient");
+const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 900;
 

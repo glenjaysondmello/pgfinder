@@ -1,5 +1,5 @@
 const Comment = require("../models/Comment");
-const redisClient = require("../redis/redisClient");
+const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 60;
 

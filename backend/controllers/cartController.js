@@ -1,6 +1,6 @@
 const { mongoose } = require("mongoose");
 const Cart = require("../models/Cart");
-const redisClient = require("../redis/redisClient");
+const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 1800;
 

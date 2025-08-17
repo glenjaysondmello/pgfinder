@@ -6,7 +6,7 @@ const Payment = require("../models/Payment");
 const fs = require("fs");
 const path = require("path");
 const PgRoom = require("../models/PgRoom");
-const redisClient = require("../redis/redisClient");
+const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 1800;
 

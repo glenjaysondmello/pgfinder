@@ -1,6 +1,6 @@
 const { cloudinary } = require("../cloudinary/cloudinaryConfig");
 const PgRoom = require("../models/PgRoom");
-const redisClient = require("../redis/redisClient");
+const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 3600;
 
