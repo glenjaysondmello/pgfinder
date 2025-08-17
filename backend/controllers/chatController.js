@@ -29,13 +29,23 @@ const handleChat = async (req, res) => {
       });
 
       await chat.save();
+
+      await redisClient.setEx(
+        `chats:${userId}`,
+        CACHE_TTL,
+        JSON.stringify(chat.messages)
+      );
     } else {
       chat.messages.push({ type: "user", content: message });
       chat.messages.push({ type: "bot", content: reply });
 
-      await redisClient.del(`chats:${userId}`);
-
       await chat.save();
+
+      await redisClient.setEx(
+        `chats:${userId}`,
+        CACHE_TTL,
+        JSON.stringify(chat.messages)
+      );
     }
 
     res.json({ reply });
@@ -53,17 +63,17 @@ const getUserChat = async (req, res) => {
     const cachedChats = await redisClient.get(cacheKey);
 
     if (cachedChats) {
-      res.json(JSON.parse(cachedChats));
+      return res.json({ messages: JSON.parse(cachedChats) });
     }
 
     const chat = await ChatModel.findOne({ userId });
     const messages = chat?.messages || [];
 
-    await redisClient.setEx(cacheKey, CACHE_TTL, messages);
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(messages));
 
-    res.json({ messages: messages });
+    res.json({ messages });
   } catch (error) {
-    console.error("Get chat error:", err);
+    console.error("Get chat error:", error);
     res.status(500).json({ error: "Failed to fetch chat" });
   }
 };

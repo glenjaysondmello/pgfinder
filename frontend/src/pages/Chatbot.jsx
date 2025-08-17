@@ -131,31 +131,30 @@ const Chatbot = () => {
     }
   };
 
-  // New handler for the Clear History button
-  const handleClearHistory = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete your chat history? This cannot be undone."
-      )
-    )
-      return;
-    try {
-      await axios.delete(`${backendUrl}/api/bot/chat/history`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        withCredentials: true,
-      });
-      setMessages([
-        {
-          type: "bot",
-          content: "Chat history cleared. How can I help you today?",
-        },
-      ]);
-      toast.success("Chat history cleared!");
-    } catch (err) {
-      toast.error("Failed to clear chat history.");
-      console.error("Clear History Error:", err);
-    }
-  };
+  // const handleClearHistory = async () => {
+  //   if (
+  //     !window.confirm(
+  //       "Are you sure you want to delete your chat history? This cannot be undone."
+  //     )
+  //   )
+  //     return;
+  //   try {
+  //     await axios.delete(`${backendUrl}/api/bot/chat/history`, {
+  //       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       withCredentials: true,
+  //     });
+  //     setMessages([
+  //       {
+  //         type: "bot",
+  //         content: "Chat history cleared. How can I help you today?",
+  //       },
+  //     ]);
+  //     toast.success("Chat history cleared!");
+  //   } catch (err) {
+  //     toast.error("Failed to clear chat history.");
+  //     console.error("Clear History Error:", err);
+  //   }
+  // };
 
   const renderChatContent = () => {
     if (loadingHistory) {
@@ -211,7 +210,6 @@ const Chatbot = () => {
 
   return (
     <PageLayout>
-      {/* The main chat window container is now inside the Chatbot component */}
       <div className="max-w-4xl w-full mx-auto h-full flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h1 className="text-xl font-bold text-white text-center flex-1">
