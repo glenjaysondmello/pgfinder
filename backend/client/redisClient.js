@@ -1,11 +1,10 @@
 const { createClient } = require("redis");
 
-
 const REDIS_URL =
   `redis://redis:6379`;
 
 const redisClient = createClient({
-  url: REDIS_URL,
+  url: process.env.REDIS_URL
 });
 
 // const redisClient = createClient({
