@@ -19,7 +19,8 @@
     "pdfkit": "^0.17.1",
     "razorpay": "^2.9.6",
     "redis": "^5.8.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
   },
   "scripts": {
     "start": "node server.js"

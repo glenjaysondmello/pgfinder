@@ -1,6 +1,7 @@
 const { generateAIResponse } = require("../chatbot/groqBot");
 const PG = require("../models/PgRoom");
 const ChatModel = require("../models/ChatMessage");
+const { searchPGsVector } = require("../chatbot/qdrantClient");
 const redisClient = require("../client/redisClient");
 
 const CACHE_TTL = 900;
@@ -14,8 +15,8 @@ const handleChat = async (req, res) => {
   }
 
   try {
-    const pgList = await PG.find();
-    const reply = await generateAIResponse(message, pgList);
+    const releventPGs = await searchPGsVector(message, 5);
+    const reply = await generateAIResponse(message, releventPGs);
 
     let chat = await ChatModel.findOne({ userId });
 

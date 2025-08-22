@@ -1,6 +1,7 @@
 const { cloudinary } = require("../cloudinary/cloudinaryConfig");
 const PgRoom = require("../models/PgRoom");
 const redisClient = require("../client/redisClient");
+const { addPGtoVectorDB, deletePGVector } = require("../chatbot/qdrantClient");
 
 const CACHE_TTL = 3600;
 
@@ -10,7 +11,7 @@ const getAllPgs = async (req, res) => {
 
     const cachedData = await redisClient.get(cacheKey);
 
-    if(cachedData) {
+    if (cachedData) {
       console.log("Serving PGs from Redis cache");
       return res.json(JSON.parse(cachedData));
     }
@@ -27,12 +28,12 @@ const getAllPgs = async (req, res) => {
 
 const getPg = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const cacheKey = `pg:${id}`;
 
     const cachedRoom = await redisClient.get(cacheKey);
 
-    if(cachedRoom) {
+    if (cachedRoom) {
       console.log("Serving PG from Redis cache");
       return res.json(JSON.parse(cachedRoom));
     }
@@ -57,6 +58,8 @@ const addPg = async (req, res) => {
 
     const newRoom = new PgRoom({ ...req.body, images: imageUrls });
     await newRoom.save();
+
+    await addPGtoVectorDB(newRoom.toObject());
 
     await redisClient.del("pgs:all");
 
@@ -102,6 +105,8 @@ const updatePg = async (req, res) => {
       { new: true }
     );
 
+    await addPGtoVectorDB(updatedRoom.toObject());
+
     await redisClient.del("pgs:all");
     await redisClient.del(`pg:${req.params.id}`);
 
@@ -130,6 +135,7 @@ const deletePg = async (req, res) => {
     );
 
     await PgRoom.findByIdAndDelete(req.params.id);
+    await deletePGVector(req.params.id);
 
     await redisClient.del("pgs:all");
     await redisClient.del(`pg:${req.params.id}`);

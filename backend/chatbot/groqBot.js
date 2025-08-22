@@ -1,14 +1,7 @@
 const axios = require("axios");
 
 const generateAIResponse = async (userMsg, pgData) => {
-  const formattedPGs = pgData
-    .map(
-      (pg) =>
-        `Name: ${pg.name}, Location: ${pg.location}, Price: ₹${
-          pg.price
-        }, Amenities: ${pg.amenities.join(", ")}`
-    )
-    .join("\n");
+  const formattedPGs = pgData.join("\n");
 
   const messages = [
     {
@@ -48,6 +41,3 @@ const generateAIResponse = async (userMsg, pgData) => {
 };
 
 module.exports = { generateAIResponse };
-
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.m8pnmviaSgqjOtGDaj_wVkSeNZv5JaBvuKNd5p4xNwk - qdrant
