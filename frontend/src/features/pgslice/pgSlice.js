@@ -203,9 +203,9 @@ const pgSlice = createSlice({
       .addCase(addPg.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(addPg.fulfilled, (state, action) => {
+      .addCase(addPg.fulfilled, (state) => {
         state.status = "succeeded";
-        state.pgRooms.push(action.payload);
+        // state.pgRooms.push(action.payload);
       })
       .addCase(addPg.rejected, (state) => {
         state.status = "failed";

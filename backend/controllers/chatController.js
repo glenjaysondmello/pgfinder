@@ -1,5 +1,4 @@
 const { generateAIResponse } = require("../chatbot/groqBot");
-const PG = require("../models/PgRoom");
 const ChatModel = require("../models/ChatMessage");
 const { searchPGsVector } = require("../chatbot/qdrantClient");
 const redisClient = require("../client/redisClient");
