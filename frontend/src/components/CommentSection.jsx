@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchComments,
@@ -12,7 +12,18 @@ import {
   dislikeReply,
   editReply,
   deleteReply,
+  newCommentSocket,
+  replyAddedSocket,
+  likeUpdateSocket,
+  dislikeUpdateSocket,
+  editCommentSocket,
+  deleteCommentSocket,
+  likeReplySocket,
+  dislikeReplySocket,
+  editReplySocket,
+  deleteReplySocket,
 } from "../features/comments/commentSlice";
+
 import Comment from "./Comment";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
@@ -21,7 +32,6 @@ import Avatar from "react-avatar";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const socket = io(`${backendUrl}`);
-// const socket = io("http://localhost:5000");
 
 const CommentSkeleton = () => (
   <div className="flex gap-3 my-6 animate-pulse">
@@ -36,7 +46,7 @@ const CommentSkeleton = () => (
 const CommentSection = ({ pgId }) => {
   const dispatch = useDispatch();
   const { comments, status, error } = useSelector((store) => store.comments);
-  const { user } = useSelector((store) => store.auth); // Get current user for avatar
+  const { user } = useSelector((store) => store.auth);
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
@@ -44,25 +54,49 @@ const CommentSection = ({ pgId }) => {
   }, [dispatch, pgId]);
 
   useEffect(() => {
-    const handleUpdate = () => dispatch(fetchComments(pgId));
-    const events = [
-      "new-comment",
-      "reply-added",
-      "like-update",
-      "dislike-update",
-      "edit-comment",
-      "delete-comment",
-      "like-reply",
-      "dislike-reply",
-      "edit-reply",
-      "delete-reply",
-    ];
-    events.forEach((event) => socket.on(event, handleUpdate));
+    
+    socket.on("new-comment", (comment) => dispatch(newCommentSocket(comment)));
+    socket.on("reply-added", (updatedComment) =>
+      dispatch(replyAddedSocket(updatedComment))
+    );
+    socket.on("like-update", (updatedComment) =>
+      dispatch(likeUpdateSocket(updatedComment))
+    );
+    socket.on("dislike-update", (updatedComment) =>
+      dispatch(dislikeUpdateSocket(updatedComment))
+    );
+    socket.on("edit-comment", (updatedComment) =>
+      dispatch(editCommentSocket(updatedComment))
+    );
+    socket.on("delete-comment", (commentId) =>
+      dispatch(deleteCommentSocket(commentId))
+    );
+    socket.on("like-reply", (updatedComment) =>
+      dispatch(likeReplySocket(updatedComment))
+    );
+    socket.on("dislike-reply", (updatedComment) =>
+      dispatch(dislikeReplySocket(updatedComment))
+    );
+    socket.on("edit-reply", (updatedComment) =>
+      dispatch(editReplySocket(updatedComment))
+    );
+    socket.on("delete-reply", ({ commentId, replyId }) =>
+      dispatch(deleteReplySocket({ commentId, replyId }))
+    );
 
     return () => {
-      events.forEach((event) => socket.off(event, handleUpdate));
+      socket.off("new-comment");
+      socket.off("reply-added");
+      socket.off("like-update");
+      socket.off("dislike-update");
+      socket.off("edit-comment");
+      socket.off("delete-comment");
+      socket.off("like-reply");
+      socket.off("dislike-reply");
+      socket.off("edit-reply");
+      socket.off("delete-reply");
     };
-  }, [dispatch, pgId]);
+  }, [dispatch]);
 
   const handlePostComment = () => {
     if (!newComment.trim()) {

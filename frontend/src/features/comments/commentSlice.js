@@ -217,7 +217,66 @@ const commentSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    newCommentSocket: (state, action) => {
+      state.comments.unshift(action.payload);
+    },
+    replyAddedSocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    likeUpdateSocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    dislikeUpdateSocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    editCommentSocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    deleteCommentSocket: (state, action) => {
+      state.comments = state.comments.filter((c) => c._id !== action.payload);
+    },
+    likeReplySocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    dislikeReplySocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    editReplySocket: (state, action) => {
+      const idx = state.comments.findIndex((c) => c._id === action.payload._id);
+      if (idx !== -1) {
+        state.comments[idx] = action.payload;
+      }
+    },
+    deleteReplySocket: (state, action) => {
+      const idx = state.comments.findIndex(
+        (c) => c._id === action.payload.commentId
+      );
+      if (idx !== -1) {
+        state.comments[idx].replies = state.comments[idx].replies.filter(
+          (r) => r._id !== action.payload.replyId
+        );
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchComments.pending, (state) => {
@@ -231,8 +290,8 @@ const commentSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(postComment.fulfilled, (state, action) => {
-        state.comments.unshift(action.payload);
+      .addCase(postComment.fulfilled, () => {
+        // state.comments.unshift(action.payload);
       })
       .addCase(replyToComment.fulfilled, (state, action) => {
         const index = state.comments.findIndex(
@@ -288,6 +347,19 @@ const commentSlice = createSlice({
       });
   },
 });
+
+export const {
+  newCommentSocket,
+  replyAddedSocket,
+  likeUpdateSocket,
+  dislikeUpdateSocket,
+  editCommentSocket,
+  deleteCommentSocket,
+  likeReplySocket,
+  dislikeReplySocket,
+  editReplySocket,
+  deleteReplySocket,
+} = commentSlice.actions;
 
 export default commentSlice.reducer;
 

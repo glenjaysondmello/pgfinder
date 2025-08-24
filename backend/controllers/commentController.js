@@ -212,7 +212,7 @@ const deleteComment = async (req, res) => {
     await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("delete-comment", commentId);
-    res.status(200).json({ message: "Deleted successfully" });
+    res.status(200).json(commentId);
   } catch (err) {
     res.status(500).json({ message: "Failed to delete comment" });
   }
@@ -361,7 +361,7 @@ const deleteReply = async (req, res) => {
     await redisClient.del(`comments:${comment.pgId}`);
 
     broadcast("delete-reply", commentId);
-    res.status(200).json({ message: "Deleted successfully" });
+    res.status(200).json({ commentId, replyId });
   } catch (err) {
     res.status(500).json({ message: "Failed to delete comment" });
   }
