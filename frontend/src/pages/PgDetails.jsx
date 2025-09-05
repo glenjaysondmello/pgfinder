@@ -65,6 +65,8 @@ const PgDetails = () => {
             await dispatch(
               verify({
                 pgId,
+                pgName: selectedPg.name,
+                pgLocation: selectedPg.location,
                 razorpay_order_id: res.razorpay_order_id,
                 razorpay_payment_id: res.razorpay_payment_id,
                 razorpay_signature: res.razorpay_signature,

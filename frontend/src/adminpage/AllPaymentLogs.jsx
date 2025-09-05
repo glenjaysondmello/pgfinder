@@ -51,6 +51,7 @@ const AllPaymentLogs = () => {
 
     return (
       <div>
+        {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto bg-gray-800 shadow-lg rounded-lg">
           <table className="min-w-full">
             <thead className="bg-gray-900/50">
@@ -63,6 +64,12 @@ const AllPaymentLogs = () => {
                 </th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-300">
                   Payment ID
+                </th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-300">
+                  PG Name
+                </th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-300">
+                  PG Location
                 </th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-300">
                   PG ID
@@ -81,15 +88,13 @@ const AllPaymentLogs = () => {
                   <td className="py-4 px-4">
                     {new Date(payment.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="py-4 px-4 truncate max-w-xs">
-                    {payment.email}
-                  </td>
+                  <td className="py-4 px-4 truncate max-w-xs">{payment.email}</td>
                   <td className="py-4 px-4 font-mono truncate max-w-xs">
                     {payment.razorpay_payment_id}
                   </td>
-                  <td className="py-4 px-4 font-mono truncate max-w-xs">
-                    {payment.pgId}
-                  </td>
+                  <td className="py-4 px-4 truncate max-w-xs">{payment.pgName || "N/A"}</td>
+                  <td className="py-4 px-4 truncate max-w-xs">{payment.pgLocation || "N/A"}</td>
+                  <td className="py-4 px-4 font-mono truncate max-w-xs">{payment.pgId}</td>
                   <td className="py-4 px-4 text-green-400 font-semibold">
                     ₹{payment.amount}
                   </td>
@@ -99,6 +104,7 @@ const AllPaymentLogs = () => {
           </table>
         </div>
 
+        {/* Mobile Cards */}
         <div className="block md:hidden space-y-4">
           {history.map((payment) => (
             <div
@@ -118,6 +124,14 @@ const AllPaymentLogs = () => {
               </div>
               <div className="mt-4 border-t border-gray-700 pt-3 space-y-2">
                 <div>
+                  <p className="text-xs text-gray-400">PG Name</p>
+                  <p className="font-semibold text-gray-300 truncate">{payment.pgName || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">PG Location</p>
+                  <p className="font-semibold text-gray-300 truncate">{payment.pgLocation || "N/A"}</p>
+                </div>
+                <div>
                   <p className="text-xs text-gray-400">Payment ID</p>
                   <p className="font-mono text-sm text-gray-300 truncate">
                     {payment.razorpay_payment_id}
@@ -125,9 +139,7 @@ const AllPaymentLogs = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">PG ID</p>
-                  <p className="font-mono text-sm text-gray-300 truncate">
-                    {payment.pgId}
-                  </p>
+                  <p className="font-mono text-sm text-gray-300 truncate">{payment.pgId}</p>
                 </div>
                 <p className="text-xs text-gray-400 pt-1">
                   Date: {new Date(payment.createdAt).toLocaleDateString()}
