@@ -17,7 +17,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://pgfinder-wheat.vercel.app",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   },
@@ -34,7 +34,7 @@ app.use(cookieParser());
 // https://pgfinder-wheat.vercel.app
 app.use(
   cors({
-    origin: "https://pgfinder-wheat.vercel.app",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,

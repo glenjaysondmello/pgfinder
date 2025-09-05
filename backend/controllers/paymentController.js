@@ -69,27 +69,63 @@ const verify = async (req, res) => {
       await redisClient.del(`user:${uid}:payments`);
       await redisClient.del("admin:payments");
 
-      const invoiceDir = path.join(__dirname, "../invoices");
+      // const invoiceDir = path.join(__dirname, "../invoices");
 
-      if (!fs.existsSync(invoiceDir)) fs.mkdirSync(invoiceDir);
+      // if (!fs.existsSync(invoiceDir)) fs.mkdirSync(invoiceDir);
 
-      const doc = new PDFDocument();
+      // const doc = new PDFDocument();
 
-      const invoicePath = path.join(
-        invoiceDir,
-        `invoice-${paymentData._id}.pdf`
-      );
+      // const invoicePath = path.join(
+      //   invoiceDir,
+      //   `invoice-${paymentData._id}.pdf`
+      // );
 
-      doc.pipe(fs.createWriteStream(invoicePath));
+      // doc.pipe(fs.createWriteStream(invoicePath));
 
-      doc.fontSize(20).text("PG Booking Invoice", { align: "center" });
-      doc.moveDown();
-      doc.fontSize(14).text(`Invoice ID: ${paymentData._id}`);
-      doc.text(`Date: ${new Date().toLocaleDateString()}`);
-      doc.text(`PG ID: ${pgId}`);
-      doc.text(`Booked By: ${name} (${email})`);
-      doc.text(`Amount Paid: Rs.${amount}`);
-      doc.end();
+      // doc.fontSize(20).text("PG Booking Invoice", { align: "center" });
+      // doc.moveDown();
+      // doc.fontSize(14).text(`Invoice ID: ${paymentData._id}`);
+      // doc.text(`Date: ${new Date().toLocaleDateString()}`);
+      // doc.text(`PG ID: ${pgId}`);
+      // doc.text(`Booked By: ${name} (${email})`);
+      // doc.text(`Amount Paid: Rs.${amount}`);
+      // doc.end();
+
+      const generatePdfBuffer = () => {
+        return new Promise((resolve) => {
+          const doc = new PDFDocument({ size: "A4", margin: 50 });
+          const buffers = [];
+
+          doc.on("data", (chunk) => buffers.push(chunk));
+          doc.on("end", () => resolve(Buffer.concat(buffers)));
+
+          doc.fontSize(20).text("PG Booking Invoice", { align: "center" });
+          doc.moveDown();
+          doc
+            .fontSize(12)
+            .text(`Invoice ID: ${paymentData._id}`, { continued: true })
+            .text(`Date: ${new Date().toLocaleDateString()}`, {
+              align: "right",
+            });
+          doc.moveDown();
+          doc.text(`PG ID: ${pgId}`);
+          doc.text(`Booked By: ${name} (${email})`);
+          doc.moveDown();
+          doc
+            .fontSize(14)
+            .text(`Amount Paid: Rs. ${amount}`, { align: "right" });
+
+          doc.end();
+        });
+      };
+
+      const pdfBuffer = await generatePdfBuffer();
+      const pg = await PgRoom.findById(pgId);
+
+      if (!pg) {
+        console.error("PG not found for email notification");
+        return res.status(404).json({ error: "PG not found" });
+      }
 
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -99,13 +135,6 @@ const verify = async (req, res) => {
         },
       });
 
-      const pg = await PgRoom.findById(pgId);
-
-      if (!pg) {
-        console.error("PG not found for email notification");
-        return res.status(404).json({ error: "PG not found" });
-      }
-
       const ownerMailOptions = {
         from: `"MY PG" <${process.env.EMAIL_USER}>`,
         to: pg.email,
@@ -114,10 +143,12 @@ const verify = async (req, res) => {
         attachments: [
           {
             filename: `invoice-${paymentData._id}.pdf`,
-            path: invoicePath,
+            content: pdfBuffer,
+            contentType: "application/pdf",
           },
         ],
       };
+
       await transporter.sendMail(ownerMailOptions);
 
       const userMailOptions = {
@@ -128,10 +159,12 @@ const verify = async (req, res) => {
         attachments: [
           {
             filename: `receipt-${paymentData._id}.pdf`,
-            path: invoicePath,
+            content: pdfBuffer,
+            contentType: "application/pdf",
           },
         ],
       };
+
       await transporter.sendMail(userMailOptions);
 
       console.log("Emails sent to PG owner and user");
