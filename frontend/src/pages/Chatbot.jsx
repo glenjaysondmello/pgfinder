@@ -5,12 +5,10 @@ import { FaPaperPlane, FaTrash } from "react-icons/fa";
 import Avatar from "react-avatar";
 import toast from "react-hot-toast";
 
-// Components
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Loader from "../animations/Loader";
 
-// A generic, reusable layout for any page.
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen flex flex-col">
     <Sidebar />
@@ -21,7 +19,6 @@ const PageLayout = ({ children }) => (
   </div>
 );
 
-// The "Bot is typing..." indicator component, now with avatar.
 const TypingIndicator = () => (
   <div className="flex items-end gap-2">
     <img
