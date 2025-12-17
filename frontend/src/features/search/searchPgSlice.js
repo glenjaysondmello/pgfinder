@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { query } from "firebase/firestore";
 
 // const API_URL = "http://localhost:5000/api/pg";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -40,6 +41,7 @@ const searchSlice = createSlice({
       }
     },
     clearResults: (state) => {
+      state.query = "";
       state.results = [];
       state.loading = false;
       state.error = null;

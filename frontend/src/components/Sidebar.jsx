@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { signOut } from "firebase/auth";
@@ -20,7 +20,6 @@ const Sidebar = () => {
   const { open } = useSelector((store) => store.sidebar);
   const { user, role } = useSelector((store) => store.auth);
   const token = localStorage.getItem("token");
-  const [visibleItems, setVisibleItems] = useState([]);
 
   const allItems = [
     { icon: <FaHome size="20px" />, text: "Home", browse: () => navigate("/") },
@@ -30,9 +29,8 @@ const Sidebar = () => {
     { icon: <CgProfile size="20px" />, text: "Admin", browse: () => navigate("/admin"), adminOnly: true },
   ];
 
-  useEffect(() => {
-    const items = role === "admin" ? allItems : allItems.filter(item => !item.adminOnly);
-    setVisibleItems(items);
+  const visibleItems = useMemo(() => {
+    return role === "admin" ? allItems : allItems.filter(item => !item.adminOnly);
   }, [role]);
 
   const handleNavigate = (browseFunc) => {
