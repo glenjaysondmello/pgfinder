@@ -5,6 +5,7 @@ const { v5: uuidv5 } = require("uuid");
 let embedder;
 const COLLECTION = "pg_listings";
 const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+const DEFAULT_TENANT = process.env.DEFAULT_TENANT || "public_pg";
 
 (async () => {
   console.log("Loading embedding model");
@@ -40,12 +41,30 @@ const embedText = async (text) => {
 const addPGtoVectorDB = async (pg) => {
   const text = `${pg.name}, located at ${pg.location}, priced at ₹${
     pg.price
-  }, amenities: ${pg.amenities.join(", ")}`;
+  }, amenities: ${
+    Array.isArray(pg.amenities) ? pg.amenities.join(", ") : pg.amenities
+  }`;
   const vector = await embedText(text);
+
+  const payload = {
+    tenantId: pg.tenantId || DEFAULT_TENANT,
+    pgId: pg._id ? pg._id.toString() : null,
+    location: pg.location || null,
+    price: typeof pg.price === "number" ? pg.price : Number(pg.price),
+    amenities: Array.isArray(pg.amenities)
+      ? pg.amenities
+      : pg.amenities
+      ? [pg.amenities]
+      : [],
+  };
 
   await qdrant.upsert(COLLECTION, {
     points: [
-      { id: uuidv5(pg._id.toString(), NAMESPACE), vector, payload: { text } },
+      {
+        id: uuidv5(pg._id.toString(), NAMESPACE),
+        vector: { dense: vector },
+        payload,
+      },
     ],
   });
 };
@@ -60,10 +79,27 @@ const deletePGVector = async (pgId) => {
   console.log(`Deleted PG vector with ID ${pgId} from Qdrant`);
 };
 
-const searchPGsVector = async (query, topK = 5) => {
-  const vector = await embedText(query);
-  const res = await qdrant.search(COLLECTION, { vector, limit: topK });
-  return res.map((r) => r.payload.text);
+const searchPGsVector = async (query, topK = 5, tenant = DEFAULT_TENANT) => {
+  const denseVec = await embedText(query);
+
+  const res = await qdrant.search(COLLECTION, {
+    vector: { name: "dense", vector: denseVec },
+    limit: topK,
+    filter: {
+      must: [
+        {
+          key: "tenantId",
+          match: {
+            value: tenant,
+          },
+        },
+      ],
+    },
+  });
+
+  const ids = res.map((r) => r.payload?.text || null).filter(Boolean);
+
+  return ids;
 };
 
 module.exports = { addPGtoVectorDB, deletePGVector, searchPGsVector };

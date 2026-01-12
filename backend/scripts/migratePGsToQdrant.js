@@ -15,6 +15,7 @@ const qdrant = new QdrantClient({
 let embedder;
 const COLLECTION = "pg_listings";
 const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+const DEFAULT_TENANT = process.env.DEFAULT_TENANT || "public_pg";
 
 const initEmbedder = async () => {
   console.log("Loading embedding model");
@@ -27,55 +28,65 @@ const embedText = async (text) => {
   return Array.from(emb[0]);
 };
 
-const ensureCollection = async () => {
-  try {
-    await qdrant.createCollection(COLLECTION, {
-      vectors: { size: 384, distance: "Cosine" },
-    });
-    console.log("Qdrat collection created");
-  } catch (error) {
-    if (error.response?.status === 409) {
-      console.log("Collection already exists");
-    } else {
-      console.error("Error creating collection");
-      process.exit(1);
-    }
-  }
-};
+// const ensureCollection = async () => {
+//   try {
+//     await qdrant.createCollection(COLLECTION, {
+//       vectors: { size: 384, distance: "Cosine" },
+//     });
+//     console.log("Qdrat collection created");
+//   } catch (error) {
+//     if (error.response?.status === 409) {
+//       console.log("Collection already exists");
+//     } else {
+//       console.error("Error creating collection");
+//       process.exit(1);
+//     }
+//   }
+// };
 
 const migratePGs = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connected to MongoDB");
+    console.log("Connected to MongoDB");
 
     await initEmbedder();
     // await ensureCollection();
 
     const pgList = await PG.find();
-    console.log(`📦 Found ${pgList.length} PG records in MongoDB`);
+    console.log(`Found ${pgList.length} PG records in MongoDB`);
 
-    const points = [];
+    const batchSize = 64;
+    for (let i = 0; i < pgList.length; i += batchSize) {
+      const batch = pgList.slice(i, i + batchSize);
+      const points = [];
 
-    for (const pg of pgList) {
-      const text = `${pg.name}, located at ${pg.location}, priced at ₹${
-        pg.price
-      }, amenities: ${pg.amenities.join(", ")}`;
+      for (const pg of batch) {
+        const text = `${pg.name}, located at ${pg.location}, priced at ₹${
+          pg.price
+        }, amenities: ${pg.amenities.join(", ")}`;
+        const vector = await embedText(text);
 
-      const vector = await embedText(text);
+        points.push({
+          id: uuidv5(pg._id.toString(), NAMESPACE),
+          vector: { dense: vector },
+          payload: {
+            tenantId: DEFAULT_TENANT,
+            pgId: pg._id.toString(),
+            location: pg.location,
+            price: Number(pg.price),
+            amenities: Array.isArray(pg.amenities) ? pg.amenities : [],
+            text,
+          },
+        });
+      }
 
-      points.push({
-        id: uuidv5(pg._id.toString(), NAMESPACE),
-        vector,
-        payload: { text, mongoId: pg._id.toString() },
-      });
+      if (points.length > 0) {
+        await qdrant.upsert(COLLECTION, { points });
+        console.log(`Upserted batch ${i / batchSize + 1}`);
+      }
     }
 
-    if (points.length > 0) {
-      await qdrant.upsert(COLLECTION, { points });
-      console.log(`Migrated ${points.length} PGs to Qdrant`);
-    } else {
-      console.log("No PG records found to migrate");
-    }
+    console.log(`Migrated ${pgList.length} PGs to Qdrant`);
     await mongoose.disconnect();
     console.log("Migration complete, MongoDB disconnected");
     process.exit(0);
