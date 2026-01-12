@@ -10,11 +10,12 @@ dotenv.config();
 const qdrant = new QdrantClient({
   url: process.env.QDRANT_URL,
   apiKey: process.env.QDRANT_API_KEY,
+  port: process.env.QDRANT_PORT,
 });
 
 let embedder;
 const COLLECTION = "pg_listings";
-const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+const NAMESPACE = process.env.NAMESPACE;
 const DEFAULT_TENANT = process.env.DEFAULT_TENANT || "public_pg";
 
 const initEmbedder = async () => {

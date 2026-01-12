@@ -4,7 +4,7 @@ const { v5: uuidv5 } = require("uuid");
 
 let embedder;
 const COLLECTION = "pg_listings";
-const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+const NAMESPACE = process.env.NAMESPACE;
 const DEFAULT_TENANT = process.env.DEFAULT_TENANT || "public_pg";
 
 (async () => {
@@ -16,6 +16,7 @@ const DEFAULT_TENANT = process.env.DEFAULT_TENANT || "public_pg";
 const qdrant = new QdrantClient({
   url: process.env.QDRANT_URL,
   apiKey: process.env.QDRANT_API_KEY,
+  port: process.env.QDRANT_PORT,
 });
 
 // (async () => {
@@ -56,6 +57,7 @@ const addPGtoVectorDB = async (pg) => {
       : pg.amenities
       ? [pg.amenities]
       : [],
+    text,
   };
 
   await qdrant.upsert(COLLECTION, {
@@ -97,9 +99,7 @@ const searchPGsVector = async (query, topK = 5, tenant = DEFAULT_TENANT) => {
     },
   });
 
-  const ids = res.map((r) => r.payload?.text || null).filter(Boolean);
-
-  return ids;
+  return res.map((r) => r.payload.text);
 };
 
 module.exports = { addPGtoVectorDB, deletePGVector, searchPGsVector };
