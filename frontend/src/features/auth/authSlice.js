@@ -10,8 +10,22 @@ const authSlice = createSlice({
   },
   reducers: {
     setAuthUser: (state, action) => {
-      const user = action.payload.user || null;
-      const token = action.payload.token || null;
+      const user = action.payload?.user || null;
+      const token = action.payload?.token || null;
+
+      if (!user) {
+        state.user = null;
+        state.token = null;
+        state.role = null;
+        state.currentUser = null;
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+
+        return;
+      }
+
       const role = user.role || null;
 
       state.user = user;
