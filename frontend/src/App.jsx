@@ -18,7 +18,6 @@ import Settings from "./pages/Settings";
 import Payments from "./pages/Payments";
 import AllPaymentLogs from "./adminpage/AllPaymentLogs";
 import PaymentSuccess from "./pages/PaymentSuccess";
-// import useFirebaseAuthListener from "./hooks/useFirebaseAuthListener";
 
 const App = () => {
   useAuthInitializer();

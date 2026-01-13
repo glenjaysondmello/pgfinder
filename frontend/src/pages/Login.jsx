@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import axios from "axios";
 import { auth, googleProvider } from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { setAuthUser } from "../features/auth/authSlice";
 import { FaExclamationCircle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
@@ -17,43 +14,12 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmit = async ({ email, password }) => {
     setIsLoading(true);
     try {
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const loggedUser = userCredentials.user;
-      const token = await loggedUser.getIdToken();
-
-      const { data } = await axios.get(
-        `${backendUrl}/api/userrole/getUserRole/${loggedUser.uid}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const { role } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: loggedUser.uid,
-            email: loggedUser.email,
-            displayName: loggedUser.displayName,
-            photoURL: loggedUser.photoURL,
-            role,
-          },
-          token,
-        })
-      );
+      await signInWithEmailAndPassword(auth, email, password);
 
       toast.success("Logged In Successfully!");
       navigate("/");
@@ -76,31 +42,7 @@ const Login = () => {
     setIsLoading(true);
     googleProvider.setCustomParameters({ prompt: "select_account" });
     try {
-      const userCredentials = await signInWithPopup(auth, googleProvider);
-      const loggedUser = userCredentials.user;
-      const token = await loggedUser.getIdToken();
-
-      const { data } = await axios.get(
-        `${backendUrl}/api/userrole/getUserRole/${loggedUser.uid}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const { role } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: loggedUser.uid,
-            email: loggedUser.email,
-            displayName: loggedUser.displayName,
-            photoURL: loggedUser.photoURL,
-            role,
-          },
-          token,
-        })
-      );
+      await signInWithPopup(auth, googleProvider);
 
       toast.success("Signed In With Google!");
       navigate("/");

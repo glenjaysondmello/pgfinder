@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import axios from "axios";
 import { auth, googleProvider } from "../firebase/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
@@ -11,7 +9,6 @@ import {
   signInWithPopup,
   sendEmailVerification,
 } from "firebase/auth";
-import { setAuthUser, setCurrentUser } from "../features/auth/authSlice";
 import { FaExclamationCircle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
@@ -23,10 +20,7 @@ const Signup = () => {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmit = async ({ name, email, password }) => {
     setIsLoading(true);
@@ -43,32 +37,8 @@ const Signup = () => {
 
       await updateProfile(registeredUser, { displayName: name });
 
-      const token = await registeredUser.getIdToken();
-
-      const { data } = await axios.get(
-        `${backendUrl}/api/userrole/getUserRole/${registeredUser.uid}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const { role } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: registeredUser.uid,
-            email: registeredUser.email,
-            displayName: name,
-            photoURL: registeredUser.photoURL,
-            role,
-          },
-          token,
-        })
-      );
-
       toast.success("Registered Successfully!");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         toast.error("This email is already registered. Please sign in.");
@@ -85,31 +55,7 @@ const Signup = () => {
     setIsLoading(true);
     googleProvider.setCustomParameters({ prompt: "select_account" });
     try {
-      const userCredentials = await signInWithPopup(auth, googleProvider);
-      const registeredUser = userCredentials.user;
-      const token = await registeredUser.getIdToken();
-
-      const { data } = await axios.get(
-        `${backendUrl}/api/userrole/getUserRole/${registeredUser.uid}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const { role } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      dispatch(
-        setAuthUser({
-          user: {
-            uid: registeredUser.uid,
-            email: registeredUser.email,
-            displayName: registeredUser.displayName,
-            photoURL: registeredUser.photoURL,
-            role,
-          },
-          token,
-        })
-      );
+      await signInWithPopup(auth, googleProvider);
 
       toast.success("Signed Up With Google!");
       navigate("/");

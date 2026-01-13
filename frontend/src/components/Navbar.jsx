@@ -27,27 +27,6 @@ const Navbar = () => {
       });
   };
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // This part of the logic might be redundant if you already handle auth state
-        // in your main App component or a dedicated auth listener hook.
-        // For now, it ensures the navbar is self-sufficient.
-        dispatch(
-          setAuthUser({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-          })
-        );
-      } else {
-        dispatch(setAuthUser(null));
-      }
-    });
-    return () => unsubscribe();
-  }, [dispatch]);
-
   return (
     <div className="bg-black/30 backdrop-blur-lg rounded-xl p-4 mx-2 sm:mx-4 my-4 shadow-[0_8px_32px_rgb(0_0_0/0.5)]">
       <div className="flex items-center justify-between">
