@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { addPg, clearStatus } from "../features/pgslice/pgSlice";
@@ -9,7 +9,6 @@ const AddPg = () => {
   const dispatch = useDispatch();
   const { status } = useSelector((store) => store.pg);
   const loading = status === "loading";
-  const error = status === "failed";
 
   const [pgData, setPgData] = useState({
     name: "",

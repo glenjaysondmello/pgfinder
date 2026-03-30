@@ -1,8 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { FaPlusCircle, FaListAlt, FaFileInvoiceDollar } from "react-icons/fa";
+import PropTypes from "prop-types";
 
 export const AdminLayout = ({ children }) => {
   return (
@@ -16,6 +16,10 @@ export const AdminLayout = ({ children }) => {
       </main>
     </div>
   );
+};
+
+AdminLayout.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 const AdminDashboard = () => {

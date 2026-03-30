@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -31,6 +31,8 @@ const GetPg = () => {
       dispatch(fetchPgs());
     } catch (error) {
       toast.error("Failed to delete PG");
+      console.error("Error: ", error);
+      
     }
   };
 
@@ -40,6 +42,7 @@ const GetPg = () => {
       setEditData({ ...pgData, imagesToDelete: [], newImages: [] });
     } catch (error) {
       toast.error("Failed to load PG details for editing");
+      console.error("Error: ", error);
     }
   };
 
