@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,6 +10,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import Avatar from "react-avatar";
+import PropTypes from "prop-types";
 
 dayjs.extend(relativeTime);
 
@@ -272,6 +273,33 @@ const Comment = ({
       </div>
     </div>
   );
+};
+
+Comment.propTypes = {
+  comment: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    username: PropTypes.string,
+    createdAt: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.instanceOf(Date),
+    ]),
+    photoURL: PropTypes.string,
+    userId: PropTypes.string,
+    likes: PropTypes.number,
+    dislikes: PropTypes.number,
+    replies: PropTypes.array,
+  }).isRequired,
+  onLike: PropTypes.func.isRequired,
+  onDislike: PropTypes.func.isRequired,
+  onReply: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onLikeReply: PropTypes.func.isRequired,
+  onDislikeReply: PropTypes.func.isRequired,
+  onEditReply: PropTypes.func.isRequired,
+  onDeleteReply: PropTypes.func.isRequired,
 };
 
 export default Comment;

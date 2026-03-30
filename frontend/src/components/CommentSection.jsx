@@ -23,6 +23,7 @@ import {
   editReplySocket,
   deleteReplySocket,
 } from "../features/comments/commentSlice";
+import PropTypes from "prop-types";
 
 import Comment from "./Comment";
 import { io } from "socket.io-client";
@@ -54,34 +55,33 @@ const CommentSection = ({ pgId }) => {
   }, [dispatch, pgId]);
 
   useEffect(() => {
-    
     socket.on("new-comment", (comment) => dispatch(newCommentSocket(comment)));
     socket.on("reply-added", (updatedComment) =>
-      dispatch(replyAddedSocket(updatedComment))
+      dispatch(replyAddedSocket(updatedComment)),
     );
     socket.on("like-update", (updatedComment) =>
-      dispatch(likeUpdateSocket(updatedComment))
+      dispatch(likeUpdateSocket(updatedComment)),
     );
     socket.on("dislike-update", (updatedComment) =>
-      dispatch(dislikeUpdateSocket(updatedComment))
+      dispatch(dislikeUpdateSocket(updatedComment)),
     );
     socket.on("edit-comment", (updatedComment) =>
-      dispatch(editCommentSocket(updatedComment))
+      dispatch(editCommentSocket(updatedComment)),
     );
     socket.on("delete-comment", (commentId) =>
-      dispatch(deleteCommentSocket(commentId))
+      dispatch(deleteCommentSocket(commentId)),
     );
     socket.on("like-reply", (updatedComment) =>
-      dispatch(likeReplySocket(updatedComment))
+      dispatch(likeReplySocket(updatedComment)),
     );
     socket.on("dislike-reply", (updatedComment) =>
-      dispatch(dislikeReplySocket(updatedComment))
+      dispatch(dislikeReplySocket(updatedComment)),
     );
     socket.on("edit-reply", (updatedComment) =>
-      dispatch(editReplySocket(updatedComment))
+      dispatch(editReplySocket(updatedComment)),
     );
     socket.on("delete-reply", ({ commentId, replyId }) =>
-      dispatch(deleteReplySocket({ commentId, replyId }))
+      dispatch(deleteReplySocket({ commentId, replyId })),
     );
 
     return () => {
@@ -190,6 +190,10 @@ const CommentSection = ({ pgId }) => {
       </div>
     </div>
   );
+};
+
+CommentSection.propTypes = {
+  pgId: PropTypes.string.isRequired,
 };
 
 export default CommentSection;

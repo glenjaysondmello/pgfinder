@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { FaPaperPlane, FaTrash } from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
 import Avatar from "react-avatar";
-import toast from "react-hot-toast";
-
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Loader from "../animations/Loader";
+import PropTypes from "prop-types";
 
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen flex flex-col">
@@ -18,6 +17,10 @@ const PageLayout = ({ children }) => (
     <main className="flex-1 pt-24 sm:pt-28 pb-4 px-4 flex">{children}</main>
   </div>
 );
+
+PageLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 const TypingIndicator = () => (
   <div className="flex items-end gap-2">
@@ -35,7 +38,6 @@ const TypingIndicator = () => (
 );
 
 const Chatbot = () => {
-  // Your original logic and state are preserved.
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { user } = useSelector((store) => store.auth);
   const [input, setInput] = useState("");
