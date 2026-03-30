@@ -1,8 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { FaCheckCircle } from "react-icons/fa";
+import PropTypes from "prop-types";
 
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen flex flex-col">
@@ -15,6 +15,10 @@ const PageLayout = ({ children }) => (
     </main>
   </div>
 );
+
+PageLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 const PaymentSuccess = () => {
   return (

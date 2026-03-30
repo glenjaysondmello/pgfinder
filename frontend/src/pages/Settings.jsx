@@ -1,8 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { FaChevronRight } from "react-icons/fa";
+import PropTypes from "prop-types";
 
 const PageLayout = ({ children }) => (
   <div className="bg-gray-900 min-h-screen">
@@ -16,6 +16,9 @@ const PageLayout = ({ children }) => (
   </div>
 );
 
+PageLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 const Settings = () => {
   return (
@@ -26,7 +29,6 @@ const Settings = () => {
         </h1>
 
         <div className="space-y-4">
-
           <Link
             to="payments"
             className="flex items-center justify-between bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700/50 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
@@ -41,7 +43,7 @@ const Settings = () => {
             </div>
             <FaChevronRight className="text-gray-500" />
           </Link>
-          
+
           {/* <Link
             to="profile"
             className="flex items-center justify-between bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700/50 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
@@ -57,7 +59,6 @@ const Settings = () => {
             <FaChevronRight className="text-gray-500" />
           </Link> 
           */}
-
         </div>
       </div>
     </PageLayout>

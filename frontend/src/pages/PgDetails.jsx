@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
@@ -12,7 +12,6 @@ import {
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaEnvelope,
-  FaThList,
   FaRupeeSign,
   FaCheckCircle,
   FaTimesCircle,
@@ -25,7 +24,7 @@ const PgDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { cart, selectedPg, status, error } = useSelector((store) => store.pg);
+  const { cart, selectedPg, status } = useSelector((store) => store.pg);
   const [mainImage, setMainImage] = useState(null);
 
   useEffect(() => {
@@ -75,8 +74,10 @@ const PgDetails = () => {
             ).unwrap();
             toast.success("Payment Successful!");
             navigate("/payment-success", { replace: true });
-          } catch (verificationError) {
+          } catch (err) {
             toast.error("Payment verification failed. Please contact support.");
+            console.log("ERror: ", err);
+            
           }
         },
         prefill: {
@@ -89,8 +90,10 @@ const PgDetails = () => {
       };
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch (paymentError) {
+    } catch (err) {
       toast.error("Payment initiation failed. Please try again.");
+      console.error("Error: ", err);
+      
     }
   };
 

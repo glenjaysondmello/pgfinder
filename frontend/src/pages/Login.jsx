@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -135,7 +135,7 @@ const Login = () => {
         </button>
 
         <p className="text-center text-gray-400 mt-6">
-          Don't have an account?{" "}
+          Don`&apos;`t have an account?{" "}
           <Link
             to="/signup"
             className="text-blue-400 hover:text-blue-300 font-medium transition duration-200"

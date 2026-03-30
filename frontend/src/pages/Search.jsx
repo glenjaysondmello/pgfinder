@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -136,7 +136,7 @@ const Search = () => {
               debouncedQuery && (
                 <div className="text-center pt-20">
                   <p className="text-gray-400 text-lg">
-                    No results found for "{debouncedQuery}"
+                    No results found for `&ldquo;`{debouncedQuery}`&rdquo;`
                   </p>
                   <p className="text-gray-500 mt-2">
                     Try searching for a different location or amenity.

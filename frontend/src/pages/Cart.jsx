@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -29,6 +29,8 @@ const Cart = () => {
       toast.success("Removed from your list");
     } catch (error) {
       toast.error("Failed to remove item");
+      console.error("Error: ", error);
+      
     }
   };
 
@@ -49,7 +51,7 @@ const Cart = () => {
             Your List is Empty
           </h2>
           <p className="text-gray-400 mb-6">
-            You haven't added any PGs to your list yet.
+            You haven`&apos;`t added any PGs to your list yet.
           </p>
           <Link
             to="/search"
