@@ -134,7 +134,7 @@ export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
   async (pgRoomId, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `${API_URL}/cart/removecart/${pgRoomId}`,
         {
           headers: getAuthHeaders(),
@@ -207,7 +207,7 @@ const pgSlice = createSlice({
         state.status = "succeeded";
         // state.pgRooms.push(action.payload);
       })
-      .addCase(addPg.rejected, (state) => {
+      .addCase(addPg.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

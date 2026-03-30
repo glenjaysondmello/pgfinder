@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Sidebar from "../components/Sidebar";
 import { useEffect } from "react";
