@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
-import { clearAuthUser, setAuthUser } from "../features/auth/authSlice";
+import { clearAuthUser } from "../features/auth/authSlice";
 import Avatar from "react-avatar";
 import { setBarOpen } from "../features/sidebar/sidebarSlice";
 import toast from "react-hot-toast";

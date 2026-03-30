@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { signOut } from "firebase/auth";
@@ -13,7 +13,6 @@ import { PiShoppingCartSimpleFill } from "react-icons/pi";
 import { IoSettingsSharp, IoLogOutOutline } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 
-
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,23 +20,45 @@ const Sidebar = () => {
   const { user, role } = useSelector((store) => store.auth);
   const token = localStorage.getItem("token");
 
-  const allItems = [
-    { icon: <FaHome size="20px" />, text: "Home", browse: () => navigate("/") },
-    { icon: <SiChatbot size="20px" />, text: "Chat", browse: () => navigate("/chatbot") },
-    { icon: <PiShoppingCartSimpleFill size="20px" />, text: "Your List", browse: () => navigate("/cart") },
-    { icon: <IoSettingsSharp size="20px" />, text: "Settings", browse: () => navigate("/settings") },
-    { icon: <CgProfile size="20px" />, text: "Admin", browse: () => navigate("/admin"), adminOnly: true },
-  ];
-
   const visibleItems = useMemo(() => {
-    return role === "admin" ? allItems : allItems.filter(item => !item.adminOnly);
-  }, [role]);
+    const allItems = [
+      {
+        icon: <FaHome size="20px" />,
+        text: "Home",
+        browse: () => navigate("/"),
+      },
+      {
+        icon: <SiChatbot size="20px" />,
+        text: "Chat",
+        browse: () => navigate("/chatbot"),
+      },
+      {
+        icon: <PiShoppingCartSimpleFill size="20px" />,
+        text: "Your List",
+        browse: () => navigate("/cart"),
+      },
+      {
+        icon: <IoSettingsSharp size="20px" />,
+        text: "Settings",
+        browse: () => navigate("/settings"),
+      },
+      {
+        icon: <CgProfile size="20px" />,
+        text: "Admin",
+        browse: () => navigate("/admin"),
+        adminOnly: true,
+      },
+    ];
+    return role === "admin"
+      ? allItems
+      : allItems.filter((item) => !item.adminOnly);
+  }, [role, navigate]);
 
   const handleNavigate = (browseFunc) => {
     browseFunc();
     dispatch(setCloseBar());
   };
-  
+
   const logOut = () => {
     signOut(auth)
       .then(() => {
@@ -55,18 +76,24 @@ const Sidebar = () => {
     <div
       className={`fixed inset-0 z-50 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
     >
-      <div className="absolute inset-0 bg-black/60" onClick={() => dispatch(setCloseBar())}></div>
+      <div
+        className="absolute inset-0 bg-black/60"
+        onClick={() => dispatch(setCloseBar())}
+      ></div>
 
       <div
         className={`relative flex flex-col h-full w-64 sm:w-72 bg-black/50 backdrop-blur-xl shadow-2xl text-white transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-xl font-semibold">Menu</h2>
-          <button onClick={() => dispatch(setCloseBar())} className="p-2 rounded-full hover:bg-gray-700/60">
+          <button
+            onClick={() => dispatch(setCloseBar())}
+            className="p-2 rounded-full hover:bg-gray-700/60"
+          >
             <FaTimes size={20} />
           </button>
         </div>
-        
+
         <nav className="flex-grow p-4 space-y-2">
           {visibleItems.map((item) => (
             <div
@@ -85,12 +112,17 @@ const Sidebar = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Avatar
-                  src={user.photoURL || "https://tse3.mm.bing.net/th?id=OIP.btgP01toqugcXjPwAF-k2AHaHa&pid=Api&P=0&h=180"}
+                  src={
+                    user.photoURL ||
+                    "https://tse3.mm.bing.net/th?id=OIP.btgP01toqugcXjPwAF-k2AHaHa&pid=Api&P=0&h=180"
+                  }
                   name={user.displayName}
                   size="40"
                   round={true}
                 />
-                <h3 className="font-semibold truncate">{user.displayName || "User"}</h3>
+                <h3 className="font-semibold truncate">
+                  {user.displayName || "User"}
+                </h3>
               </div>
               <button
                 onClick={logOut}
